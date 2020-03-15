@@ -1,0 +1,22 @@
+# warning level
+build --copt=-Wall
+build --copt=-Werror
+
+# Use color diagnostics
+build --copt=-fdiagnostics-color
+
+# Always assert
+build --copt=-UNDEBUG
+
+# Add C++11 compiler flags.
+build --cxxopt=-std=c++11
+build --host_cxxopt=-std=c++11
+
+# code coverage
+coverage --copt=-fno-inline
+coverage --copt=-fno-inline-small-functions
+coverage --copt=-fno-default-inline
+
+# remote cache, see here https://docs.bazel.build/versions/2.0.0/remote-caching.html
+build --experimental_guard_against_concurrent_changes
+

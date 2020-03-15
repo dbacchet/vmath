@@ -1,0 +1,42 @@
+name: coverage
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - created
+
+jobs:
+
+  linux:
+    timeout-minutes: 50
+
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        # compiler: [g++, clang++]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install system dependencies
+      run: |
+           sudo apt update
+           sudo apt install -y wget lcov default-jdk
+    - name: Install build dependencies
+      run: |
+           wget https://github.com/bazelbuild/bazel/releases/download/2.2.0/bazel-2.2.0-installer-linux-x86_64.sh
+           chmod +x bazel-2.2.0-installer-linux-x86_64.sh
+           sudo ./bazel-2.2.0-installer-linux-x86_64.sh
+           rm bazel-2.2.0-installer-linux-x86_64.sh 
+    - name: Coverage
+      run: |
+           bazel coverage --combined_report=lcov //...
+           genhtml bazel-out/_coverage/_coverage_report.dat -o report
+           tar -czf report.tgz report
+    - uses: actions/upload-artifact@v1
+      with:
+        name: coverage-report
+        path: report.tgz
