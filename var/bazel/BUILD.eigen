@@ -1,0 +1,6 @@
+cc_library(
+    name = 'eigen',
+    hdrs = glob(["eigen-3.3.7/Eigen/**/*", "eigen-3.3.7/unsupported/**/*"]),
+    strip_include_prefix = 'eigen-3.3.7',
+    visibility = ["//visibility:public"],
+)

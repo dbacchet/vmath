@@ -1,0 +1,94 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  release:
+    types:
+      - created
+
+jobs:
+
+  linux:
+    timeout-minutes: 50
+
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+        # compiler: [g++, clang++]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install system dependencies
+      run: |
+           sudo apt update
+           sudo apt install -y wget lcov default-jdk
+    - name: Install build dependencies
+      run: |
+           wget https://github.com/bazelbuild/bazel/releases/download/2.2.0/bazel-2.2.0-installer-linux-x86_64.sh
+           chmod +x bazel-2.2.0-installer-linux-x86_64.sh
+           sudo ./bazel-2.2.0-installer-linux-x86_64.sh
+           rm bazel-2.2.0-installer-linux-x86_64.sh 
+    - name: Build
+      run: |
+           bazel build //...
+    - name: Test
+      run: |
+           bazel test //...
+    # - name: Prepare package
+    #   if: github.event_name == 'release'
+    #   run: |
+    #        tar -czvf archive.tgz BUILD.bazel README.md install
+    # - name: Extract branch name
+    #   id: extract_branch
+    #   if: github.event_name == 'release'
+    #   shell: bash
+    #   run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/tags/})"
+    # - name: Upload package
+    #   if: github.event_name == 'release'
+    #   uses: svenstaro/upload-release-action@v1-release
+    #   with:
+    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #     file: archive.tgz
+    #     asset_name: ${{ steps.extract_branch.outputs.branch }}-${{ matrix.os }}-x86_64.tgz
+    #
+    #     tag: ${{ github.ref }}
+    #     overwrite: true
+
+  # macos:
+  #   timeout-minutes: 50
+  #
+  #   runs-on: macOS-10.14
+  #
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: Install build dependencies
+  #     run: |
+  #          wget https://github.com/bazelbuild/bazel/releases/download/1.2.1/bazel-1.2.1-installer-darwin-x86_64.sh
+  #          chmod +x bazel-1.2.1-installer-darwin-x86_64.sh
+  #          sudo ./bazel-1.2.1-installer-darwin-x86_64.sh
+  #          rm bazel-1.2.1-installer-darwin-x86_64.sh 
+  #   - name: Build
+  #     run: |
+  #          ./build_magnum.sh
+  #          bazel build ...
+  #   - name: Prepare package
+  #     if: github.event_name == 'release'
+  #     run: |
+  #          tar -czvf archive.tgz BUILD.bazel README.md install
+  #   - name: Extract branch name
+  #     id: extract_branch
+  #     if: github.event_name == 'release'
+  #     shell: bash
+  #     run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/tags/})"
+  #   - name: Upload package
+  #     if: github.event_name == 'release'
+  #     uses: svenstaro/upload-release-action@v1-release
+  #     with:
+  #       repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #       file: archive.tgz
+  #       asset_name: ${{ steps.extract_branch.outputs.branch }}-macos-x86_64.tgz
+  #       tag: ${{ github.ref }}
+  #       overwrite: true
