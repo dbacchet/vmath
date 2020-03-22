@@ -29,6 +29,11 @@
 #include <cstring>
 
 namespace math {
+
+// ///////// //
+// 2D Vector //
+// ///////// //
+
 /// 2D Vector.
 /// fields can be addressed with math names (x,y) or texture-lookup names (s,t)
 template <typename T> struct Vector2 {
@@ -67,10 +72,6 @@ template <typename T> struct Vector2 {
     void operator-=(const Vector2<T> &rhs);
     T dot(const Vector2<T> &rhs) const;
     // scalar operations
-    Vector2<T> operator+(T rhs) const;
-    Vector2<T> operator-(T rhs) const;
-    Vector2<T> operator*(T rhs) const;
-    Vector2<T> operator/(T rhs) const;
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
@@ -84,6 +85,19 @@ template <typename T> struct Vector2 {
     operator T *() { return (T *)this; }
     operator const T *() const { return (const T *)this; }
 };
+
+template <typename T> Vector2<T> operator+(const Vector2<T> &v, T s);
+template <typename T> Vector2<T> operator+(T s, const Vector2<T> &v);
+template <typename T> Vector2<T> operator-(const Vector2<T> &v, T s);
+template <typename T> Vector2<T> operator-(T s, const Vector2<T> &v);
+template <typename T> Vector2<T> operator*(const Vector2<T> &v, T s);
+template <typename T> Vector2<T> operator*(T s, const Vector2<T> &v);
+template <typename T> Vector2<T> operator/(const Vector2<T> &v, T s);
+ 
+
+// ///////// //
+// 3D Vector //
+// ///////// //
 
 /// 3D vector
 template <typename T> struct Vector3 {
@@ -131,10 +145,6 @@ template <typename T> struct Vector3 {
     T dot(const Vector3<T> &rhs) const;
     Vector3<T> cross(const Vector3<T> &rhs) const;
     // scalar operators
-    Vector3<T> operator+(T rhs) const;
-    Vector3<T> operator-(T rhs) const;
-    Vector3<T> operator*(T rhs) const;
-    Vector3<T> operator/(T rhs) const;
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
@@ -148,6 +158,19 @@ template <typename T> struct Vector3 {
     operator T *() { return (T *)this; }
     operator const T *() const { return (const T *)this; }
 };
+
+template <typename T> Vector3<T> operator+(const Vector3<T> &v, T s);
+template <typename T> Vector3<T> operator+(T s, const Vector3<T> &v);
+template <typename T> Vector3<T> operator-(const Vector3<T> &v, T s);
+template <typename T> Vector3<T> operator-(T s, const Vector3<T> &v);
+template <typename T> Vector3<T> operator*(const Vector3<T> &v, T s);
+template <typename T> Vector3<T> operator*(T s, const Vector3<T> &v);
+template <typename T> Vector3<T> operator/(const Vector3<T> &v, T s);
+
+
+// ///////// //
+// 4D Vector //
+// ///////// //
 
 /// 4D vector
 template <typename T> struct Vector4 {
@@ -178,8 +201,8 @@ template <typename T> struct Vector4 {
     , z(static_cast<T>(src.z))
     , w(static_cast<T>(src.w)) {}
     // assignment operators
-    Vector4<T> operator=(const Vector4<T> &rhs);
-    template <typename fromT> Vector4<T> operator=(const fromT &rhs) {
+    Vector4<T> &operator=(const Vector4<T> &rhs);
+    template <typename fromT> Vector4<T> &operator=(const fromT &rhs) {
         x = static_cast<T>(rhs.x);
         y = static_cast<T>(rhs.y);
         z = static_cast<T>(rhs.z);
@@ -198,24 +221,29 @@ template <typename T> struct Vector4 {
     // comparison
     bool operator==(const Vector4<T> &rhs) const;
     bool operator!=(const Vector4<T> &rhs) const;
-    // unary operators
-    Vector4<T> operator-() const;
-    // scalar math
-    Vector4<T> operator+(T rhs) const;
-    Vector4<T> operator-(T rhs) const;
-    Vector4<T> operator*(T rhs) const;
-    Vector4<T> operator/(T rhs) const;
+    // scalar operators
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
     void operator/=(T rhs);
+    // unary operators
+    Vector4<T> operator-() const;
     // conversion to pointer operator (for passing the instance as a T*)
     operator T *() { return (T *)this; }
     operator const T *() const { return (const T *)this; }
 };
 
+template <typename T> Vector4<T> operator+(const Vector4<T> &v, T s);
+template <typename T> Vector4<T> operator+(T s, const Vector4<T> &v);
+template <typename T> Vector4<T> operator-(const Vector4<T> &v, T s);
+template <typename T> Vector4<T> operator-(T s, const Vector4<T> &v);
+template <typename T> Vector4<T> operator*(const Vector4<T> &v, T s);
+template <typename T> Vector4<T> operator*(T s, const Vector4<T> &v);
+template <typename T> Vector4<T> operator/(const Vector4<T> &v, T s);
+
+
 /// 3x3 Matrix
-/// @note data is stored in column major order (same as opengl, to enforce compatibility)
+/// @note data is stored in column major order
 template <typename T> struct Matrix3 {
     T data[9]; ///< values (stored in column-major order)
 
@@ -390,6 +418,79 @@ typedef Matrix4<int> Matrix4i;
 
 typedef Quaternion<float> Quatf;
 typedef Quaternion<double> Quatd;
+
+
+//----------------------------------------------------------------------------
+// implementations for the functions that will not have explicit instantiation
+//----------------------------------------------------------------------------
+// vector2
+template <typename T> inline Vector2<T> operator+(const Vector2<T> &v, T s) {
+    return Vector2<T>(v.x+s, v.y+s);
+}
+template <typename T> inline Vector2<T> operator+(T s, const Vector2<T> &v) {
+    return Vector2<T>(v.x+s, v.y+s);
+}
+template <typename T> inline Vector2<T> operator-(const Vector2<T> &v, T s) {
+    return Vector2<T>(v.x-s, v.y-s);
+}
+template <typename T> inline Vector2<T> operator-(T s, const Vector2<T> &v) {
+    return Vector2<T>(s-v.x, s-v.y);
+}
+template <typename T> inline Vector2<T> operator*(const Vector2<T> &v, T s) {
+    return Vector2<T>(v.x*s, v.y*s);
+}
+template <typename T> inline Vector2<T> operator*(T s, const Vector2<T> &v) {
+    return Vector2<T>(v.x*s, v.y*s);
+}
+template <typename T> inline Vector2<T> operator/(const Vector2<T> &v, T s) {
+    return Vector2<T>(v.x/s, v.y/s);
+}
+
+// vector3
+template <typename T> inline Vector3<T> operator+(const Vector3<T> &v, T s) {
+    return Vector3<T>(v.x+s, v.y+s, v.z+s);
+}
+template <typename T> inline Vector3<T> operator+(T s, const Vector3<T> &v) {
+    return Vector3<T>(v.x+s, v.y+s, v.z+s);
+}
+template <typename T> inline Vector3<T> operator-(const Vector3<T> &v, T s) {
+    return Vector3<T>(v.x-s, v.y-s, v.z-s);
+}
+template <typename T> inline Vector3<T> operator-(T s, const Vector3<T> &v) {
+    return Vector3<T>(s-v.x, s-v.y, s-v.z);
+}
+template <typename T> inline Vector3<T> operator*(const Vector3<T> &v, T s) {
+    return Vector3<T>(v.x*s, v.y*s, v.z*s);
+}
+template <typename T> inline Vector3<T> operator*(T s, const Vector3<T> &v) {
+    return Vector3<T>(v.x*s, v.y*s, v.z*s);
+}
+template <typename T> inline Vector3<T> operator/(const Vector3<T> &v, T s) {
+    return Vector3<T>(v.x/s, v.y/s, v.z/s);
+}
+
+// vector4
+template <typename T> inline Vector4<T> operator+(const Vector4<T> &v, T s) {
+    return Vector4<T>(v.x+s, v.y+s, v.z+s, v.w+s);
+}
+template <typename T> inline Vector4<T> operator+(T s, const Vector4<T> &v) {
+    return Vector4<T>(v.x+s, v.y+s, v.z+s, v.w+s);
+}
+template <typename T> inline Vector4<T> operator-(const Vector4<T> &v, T s) {
+    return Vector4<T>(v.x-s, v.y-s, v.z-s, v.w-s);
+}
+template <typename T> inline Vector4<T> operator-(T s, const Vector4<T> &v) {
+    return Vector4<T>(s-v.x, s-v.y, s-v.z, s-v.w);
+}
+template <typename T> inline Vector4<T> operator*(const Vector4<T> &v, T s) {
+    return Vector4<T>(v.x*s, v.y*s, v.z*s, v.w*s);
+}
+template <typename T> inline Vector4<T> operator*(T s, const Vector4<T> &v) {
+    return Vector4<T>(v.x*s, v.y*s, v.z*s, v.w*s);
+}
+template <typename T> inline Vector4<T> operator/(const Vector4<T> &v, T s) {
+    return Vector4<T>(v.x/s, v.y/s, v.z/s, v.w/s);
+}
 
 } // namespace math
 

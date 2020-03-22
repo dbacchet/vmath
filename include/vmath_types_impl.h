@@ -97,22 +97,6 @@ template <typename T> inline T Vector2<T>::dot(const Vector2<T> &rhs) const {
     return x * rhs.x + y * rhs.y;
 }
 
-template <typename T> inline Vector2<T> Vector2<T>::operator+(T rhs) const {
-    return Vector2<T>(x + rhs, y + rhs);
-}
-
-template <typename T> inline Vector2<T> Vector2<T>::operator-(T rhs) const {
-    return Vector2<T>(x - rhs, y - rhs);
-}
-
-template <typename T> inline Vector2<T> Vector2<T>::operator*(T rhs) const {
-    return Vector2<T>(x * rhs, y * rhs);
-}
-
-template <typename T> inline Vector2<T> Vector2<T>::operator/(T rhs) const {
-    return Vector2<T>(x / rhs, y / rhs);
-}
-
 template <typename T> inline void Vector2<T>::operator+=(T rhs) {
     x += rhs;
     y += rhs;
@@ -144,6 +128,7 @@ template <typename T> inline bool Vector2<T>::operator!=(const Vector2<T> &rhs) 
 template <typename T> inline Vector2<T> Vector2<T>::operator-() const {
     return Vector2<T>(-x, -y);
 }
+
 
 // Vector3<T> implementation //
 
@@ -220,22 +205,6 @@ template <typename T> inline Vector3<T> Vector3<T>::cross(const Vector3<T> &rhs)
     return Vector3<T>(y * rhs.z - rhs.y * z, z * rhs.x - rhs.z * x, x * rhs.y - rhs.x * y);
 }
 
-template <typename T> inline Vector3<T> Vector3<T>::operator+(T rhs) const {
-    return Vector3<T>(x + rhs, y + rhs, z + rhs);
-}
-
-template <typename T> inline Vector3<T> Vector3<T>::operator-(T rhs) const {
-    return Vector3<T>(x - rhs, y - rhs, z - rhs);
-}
-
-template <typename T> inline Vector3<T> Vector3<T>::operator*(T rhs) const {
-    return Vector3<T>(x * rhs, y * rhs, z * rhs);
-}
-
-template <typename T> inline Vector3<T> Vector3<T>::operator/(T rhs) const {
-    return Vector3<T>(x / rhs, y / rhs, z / rhs);
-}
-
 template <typename T> inline void Vector3<T>::operator+=(T rhs) {
     x += rhs;
     y += rhs;
@@ -295,7 +264,7 @@ inline Vector4<T>::Vector4(const Vector4<T> &src)
 , z(src.z)
 , w(src.w) {}
 
-template <typename T> inline Vector4<T> Vector4<T>::operator=(const Vector4<T> &rhs) {
+template <typename T> inline Vector4<T> &Vector4<T>::operator=(const Vector4<T> &rhs) {
     x = rhs.x;
     y = rhs.y;
     z = rhs.z;
@@ -365,22 +334,6 @@ template <typename T> inline bool Vector4<T>::operator!=(const Vector4<T> &rhs) 
 
 template <typename T> inline Vector4<T> Vector4<T>::operator-() const {
     return Vector4<T>(-x, -y, -z, -w);
-}
-
-template <typename T> inline Vector4<T> Vector4<T>::operator+(T rhs) const {
-    return Vector4<T>(x + rhs, y + rhs, z + rhs, w + rhs);
-}
-
-template <typename T> inline Vector4<T> Vector4<T>::operator-(T rhs) const {
-    return Vector4<T>(x - rhs, y - rhs, z - rhs, w - rhs);
-}
-
-template <typename T> inline Vector4<T> Vector4<T>::operator*(T rhs) const {
-    return Vector4<T>(x * rhs, y * rhs, z * rhs, w * rhs);
-}
-
-template <typename T> inline Vector4<T> Vector4<T>::operator/(T rhs) const {
-    return Vector4<T>(x / rhs, y / rhs, z / rhs, w / rhs);
 }
 
 template <typename T> inline void Vector4<T>::operator+=(T rhs) {
