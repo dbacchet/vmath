@@ -47,10 +47,6 @@ namespace math
 
     namespace vector3
     {
-        /// dot product
-        template <typename T> T          dot(const Vector3<T>& v1, const Vector3<T>& v2);
-        /// cross product
-        template <typename T> Vector3<T> cross(const Vector3<T>& v1, const Vector3<T>& v2);
         /// get length of vector.
         template <typename T> T          length(const Vector3<T>& vec);
         /// square of length.
@@ -161,6 +157,7 @@ namespace math
 
 
 
+    #define VMATH_EPSILON (4.37114e-07)
     // //////////////////////// //
     // function implementations //
     // //////////////////////// //
@@ -172,16 +169,16 @@ namespace math
             return (T) sqrt(vec.x*vec.x + vec.y*vec.y);
         }
 
+        template <typename T> inline T length2(const Vector2<T> &vec)
+        {
+            return vec.x*vec.x + vec.y*vec.y;
+        }
+
         template <typename T> inline void normalize(Vector2<T> &vec)
         {
             T s = length(vec);
             vec.x /= s;
             vec.y /= s;
-        }
-
-        template <typename T> inline T length2(const Vector2<T> &vec)
-        {
-            return vec.x*vec.x + vec.y*vec.y;
         }
 
         template <typename T> inline Vector2<T> lerp(const Vector2<T>& v1, const Vector2<T>& v2, T fact)
@@ -193,16 +190,6 @@ namespace math
 
     namespace vector3
     {
-        template <typename T> inline T dot(const Vector3<T>& v1, const Vector3<T>& v2)
-        {
-            return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
-        }
-
-        template <typename T> inline Vector3<T> cross(const Vector3<T>& v1, const Vector3<T>& v2)
-        {
-            return Vector3<T>(v1.y*v2.z - v2.y*v1.z, v1.z*v2.x - v2.z*v1.x, v1.x*v2.y - v2.x*v1.y);
-        }
-
         template <typename T> inline T length(const Vector3<T>& vec)
         {
             return (T)sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
@@ -412,9 +399,9 @@ namespace math
             // set rotation using axis/angle
             Vector3<T> z(eye-to);
             vector3::normalize(z);
-            Vector3<T> x = vector3::cross(up,z);
+            Vector3<T> x = up.cross(z);
             vector3::normalize(x);
-            Vector3<T> y = vector3::cross(z,x);
+            Vector3<T> y = z.cross(x);
 
             Matrix4<T> m = create_translation(eye);
             m(1,1)=x.x; m(1,2)=y.x; m(1,3)=z.x;
