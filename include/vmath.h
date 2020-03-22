@@ -161,6 +161,7 @@ namespace math
 
 
 
+    #define VMATH_EPSILON (4.37114e-07)
     // //////////////////////// //
     // function implementations //
     // //////////////////////// //
