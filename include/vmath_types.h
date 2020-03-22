@@ -65,7 +65,7 @@ template <typename T> struct Vector2 {
     Vector2<T> operator-(const Vector2<T> &rhs) const;
     void operator+=(const Vector2<T> &rhs);
     void operator-=(const Vector2<T> &rhs);
-    T dot(const Vector2<T> &rhs) const { return x * rhs.x + y * rhs.y; }
+    T dot(const Vector2<T> &rhs) const;
     // scalar operations
     Vector2<T> operator+(T rhs) const;
     Vector2<T> operator-(T rhs) const;
@@ -108,13 +108,13 @@ template <typename T> struct Vector3 {
     Vector3(T nx, T ny, T nz);
     Vector3(const Vector3<T> &src);
     template <typename fromT>
-    Vector3(const Vector3<fromT> &src)
+    Vector3(const fromT &src)
     : x(static_cast<T>(src.x))
     , y(static_cast<T>(src.y))
     , z(static_cast<T>(src.z)) {}
     // assignment operators
-    Vector3<T> operator=(const Vector3<T> &rhs);
-    template <typename fromT> Vector3<T> operator=(const Vector3<fromT> &rhs) {
+    Vector3<T> &operator=(const Vector3<T> &rhs);
+    template <typename fromT> Vector3<T> &operator=(const fromT &rhs) {
         x = static_cast<T>(rhs.x);
         y = static_cast<T>(rhs.y);
         z = static_cast<T>(rhs.z);
@@ -128,7 +128,8 @@ template <typename T> struct Vector3 {
     Vector3<T> operator-(const Vector3<T> &rhs) const;
     void operator+=(const Vector3<T> &rhs);
     void operator-=(const Vector3<T> &rhs);
-    T dot(const Vector3<T> &rhs) const { return x * rhs.x + y * rhs.y + z * rhs.z; }
+    T dot(const Vector3<T> &rhs) const;
+    Vector3<T> cross(const Vector3<T> &rhs) const;
     // scalar operators
     Vector3<T> operator+(T rhs) const;
     Vector3<T> operator-(T rhs) const;
@@ -171,14 +172,14 @@ template <typename T> struct Vector4 {
     Vector4(T nx, T ny, T nz, T nw);
     Vector4(const Vector4<T> &src);
     template <typename fromT>
-    Vector4(const Vector4<fromT> &src)
+    Vector4(const fromT &src)
     : x(static_cast<T>(src.x))
     , y(static_cast<T>(src.y))
     , z(static_cast<T>(src.z))
     , w(static_cast<T>(src.w)) {}
     // assignment operators
     Vector4<T> operator=(const Vector4<T> &rhs);
-    template <typename fromT> Vector4<T> operator=(const Vector4<fromT> &rhs) {
+    template <typename fromT> Vector4<T> operator=(const fromT &rhs) {
         x = static_cast<T>(rhs.x);
         y = static_cast<T>(rhs.y);
         z = static_cast<T>(rhs.z);
@@ -193,6 +194,7 @@ template <typename T> struct Vector4 {
     Vector4<T> operator-(const Vector4<T> &rhs) const;
     void operator+=(const Vector4<T> &rhs);
     void operator-=(const Vector4<T> &rhs);
+    T dot(const Vector4<T> &rhs) const;
     // comparison
     bool operator==(const Vector4<T> &rhs) const;
     bool operator!=(const Vector4<T> &rhs) const;

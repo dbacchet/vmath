@@ -1,6 +1,8 @@
 filegroup(
     name = 'unit_test_files',
-    srcs = ['test_vmath_types.cpp',
+    srcs = ['test_vmath_types_vector2.cpp',
+            'test_vmath_types_vector3.cpp',
+            'test_vmath_types_vector4.cpp',
             'test_vmath.cpp',
            ],
 )

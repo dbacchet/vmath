@@ -83,6 +83,7 @@ TEST(Vector2, vector_operations_internal) {
     math::Vector2f v6(2.0,1.0);
     double cp = v5.dot(v6);
     ASSERT_NEAR(cp, 1.1*2.0 - 2.0*1.0, 1e-6);
+    ASSERT_NEAR(v5.dot(v6), v6.dot(v5), 1e-6);
 }
 
 TEST(Vector2, scalar_operations_internal) {
