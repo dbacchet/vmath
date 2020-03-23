@@ -28,11 +28,11 @@ template struct math::Matrix3<int64_t>;
 template struct math::Matrix3<float>;
 template struct math::Matrix3<double>;
 
-// template struct math::Matrix4<int8_t>;
-// template struct math::Matrix4<int32_t>;
-// template struct math::Matrix4<int64_t>;
-// template struct math::Matrix4<float>;
-// template struct math::Matrix4<double>;
-//
+template struct math::Matrix4<int8_t>;
+template struct math::Matrix4<int32_t>;
+template struct math::Matrix4<int64_t>;
+template struct math::Matrix4<float>;
+template struct math::Matrix4<double>;
+
 // template struct math::Quaternion<float>;
 // template struct math::Quaternion<double>;

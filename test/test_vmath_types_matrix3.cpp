@@ -9,12 +9,6 @@
 #include <limits>
 
 namespace {
-struct DummyVec {
-    double x = 10.1;
-    double y = 11.1;
-    double z = 12.1;
-    double w = 13.1;
-};
 
 // predicates used in the tests
 template <typename T> 
@@ -208,7 +202,6 @@ TEST(Matrix3x3, matrix_operations) {
                                                                   -10.0, -10.0, -10.0,
                                                                   -10.0, -10.0, -10.0}));
     math::Matrix3d m5 = m1*m2;
-    print_matrix(m5);
     ASSERT_PRED2(matrix_matrix_equal<double>, m5, math::Matrix3d({102.30, 109.56, 116.82,
                                                                   244.86, 263.01, 281.16,
                                                                   387.42, 416.46, 445.50}));
