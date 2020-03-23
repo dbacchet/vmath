@@ -27,6 +27,7 @@
 #include <cmath>
 #include <cassert>
 #include <cstring>
+#include <initializer_list>
 
 namespace math {
 
@@ -242,6 +243,10 @@ template <typename T> Vector4<T> operator*(T s, const Vector4<T> &v);
 template <typename T> Vector4<T> operator/(const Vector4<T> &v, T s);
 
 
+// ////////// //
+// 3x3 Matrix //
+// ////////// //
+
 /// 3x3 Matrix
 /// @note data is stored in column major order
 template <typename T> struct Matrix3 {
@@ -250,22 +255,24 @@ template <typename T> struct Matrix3 {
     // constructors
     Matrix3();
     Matrix3(const Matrix3<T> &src);
-    Matrix3(const T *dt);
     template <typename fromT> Matrix3(const Matrix3<fromT> &src) {
         for (int i = 0; i < 9; i++)
             data[i] = static_cast<T>(src.data[i]);
     }
+    // from arrays. Note: the input arrays are assumed in row-major, to be more consistent with the usual way of writing a matrix in a file
+    Matrix3(const T *dt);
+    Matrix3(std::initializer_list<T>);
     // comparison
     bool operator==(const Matrix3<T> &rhs) const;
     bool operator!=(const Matrix3<T> &rhs) const;
-    /// element at position (x,y): (column,row), 0..2
-    T &at(int x, int y);
-    const T &at(int x, int y) const;
-    /// element at position (i,j), with linear algebra matrix notation (row,column), 1..3
-    /// @param i row (1..3)
-    /// @param j column (1..3)
+    /// element at position (i,j), with linear algebra matrix notation (row,column), 0..2
+    /// @param i row (0..2)
+    /// @param j column (0..2)
     T &operator()(int i, int j);
     const T &operator()(int i, int j) const;
+    /// element at position (x,y), using the internal column-major notation (column,row), 0..2
+    T &at(int x, int y);
+    const T &at(int x, int y) const;
     // assignment operators
     Matrix3<T> &operator=(const Matrix3<T> &rhs);
     template <typename fromT> Matrix3<T> &operator=(const Matrix3<fromT> &rhs) {
@@ -273,27 +280,37 @@ template <typename T> struct Matrix3 {
             data[i] = static_cast<T>(rhs.data[i]);
         return *this;
     }
-
-    Matrix3<T> &operator=(const T *rhs);
-    // matrix operations
-    Matrix3<T> operator+(const Matrix3<T> &rhs) const;
-    Matrix3<T> operator-(const Matrix3<T> &rhs) const;
-    Matrix3<T> operator*(Matrix3<T> rhs) const;
     // scalar operations
-    Matrix3<T> operator+(T rhs) const;
-    Matrix3<T> operator-(T rhs) const;
-    Matrix3<T> operator*(T rhs) const;
-    Matrix3<T> operator/(T rhs) const;
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
     void operator/=(T rhs);
-    // vector operations
-    Vector3<T> operator*(const Vector3<T> &rhs) const;
     // conversion to pointer operator (for passing the instance as a T*)
     operator T *() { return (T *)data; }
     operator const T *() const { return (const T *)data; }
 };
+
+// unary operators
+template <typename T> Matrix3<T> operator-(const Matrix3<T> &m1);
+// matrix operations
+template <typename T> Matrix3<T> operator+(const Matrix3<T> &m1, const Matrix3<T> &m2);
+template <typename T> Matrix3<T> operator-(const Matrix3<T> &m1, const Matrix3<T> &m2);
+template <typename T> Matrix3<T> operator*(const Matrix3<T> &m1, const Matrix3<T> &m2);
+// scalar operations
+template <typename T> Matrix3<T> operator+(const Matrix3<T> &m1, T s);
+template <typename T> Matrix3<T> operator+(T s, const Matrix3<T> &m1);
+template <typename T> Matrix3<T> operator-(const Matrix3<T> &m1, T s);
+template <typename T> Matrix3<T> operator-(T s, const Matrix3<T> &m1);
+template <typename T> Matrix3<T> operator*(const Matrix3<T> &m1, T s);
+template <typename T> Matrix3<T> operator*(T s, const Matrix3<T> &m1);
+template <typename T> Matrix3<T> operator/(const Matrix3<T> &m1, T s);
+// vector operations
+template <typename T> Vector3<T> operator*(const Matrix3<T> &m1, const Vector3<T> &rhs);
+
+
+// ////////// //
+// 4x4 Matrix //
+// ////////// //
 
 /// 4x4 Matrix
 /// @note data is stored in column major order.
@@ -301,24 +318,25 @@ template <typename T> struct Matrix4 {
     T data[16]; ///< data stored in column major order
 
     Matrix4();
-    Matrix4(const T *dt);
     Matrix4(const Matrix4<T> &src);
     template <typename fromT> Matrix4(const Matrix4<fromT> &src) {
         for (int i = 0; i < 16; i++)
             data[i] = static_cast<T>(src.data[i]);
     }
+    // from arrays. Note: the input arrays are assumed in row-major, to be more consistent with the usual way of writing a matrix in a file
+    Matrix4(const T *dt);
+    Matrix4(std::initializer_list<T>);
     // comparison
     bool operator==(const Matrix4<T> &rhs) const;
     bool operator!=(const Matrix4<T> &rhs) const;
-    // access operators
-    /// element at position (x,y): (column,row), 0..3
-    T &at(int x, int y);
-    const T &at(int x, int y) const;
-    /// element at position (i,j), with linear algebra matrix notation (row,column), 1..4
-    /// @param i row (1..4)
-    /// @param j column (1..4)
+    /// element at position (i,j), with linear algebra matrix notation (row,column), 0..3
+    /// @param i row (0..3)
+    /// @param j column (0..3)
     T &operator()(int i, int j);
     const T &operator()(int i, int j) const;
+    /// element at position (x,y), using the internal column-major notation (column,row), 0..3
+    T &at(int x, int y);
+    const T &at(int x, int y) const;
     // assignment
     Matrix4<T> &operator=(const Matrix4<T> &rhs);
     template <typename fromT> Matrix4<T> &operator=(const Matrix4<fromT> &rhs) {
@@ -326,26 +344,33 @@ template <typename T> struct Matrix4 {
             data[i] = static_cast<T>(rhs.data[i]);
         return *this;
     }
-    // matrix operations
-    Matrix4<T> operator+(const Matrix4<T> &rhs) const;
-    Matrix4<T> operator-(const Matrix4<T> &rhs) const;
-    Matrix4<T> operator*(Matrix4<T> rhs) const;
     // scalar operations
-    Matrix4<T> operator+(T rhs) const;
-    Matrix4<T> operator-(T rhs) const;
-    Matrix4<T> operator*(T rhs) const;
-    Matrix4<T> operator/(T rhs) const;
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
     void operator/=(T rhs);
-    // vector operators
-    Vector4<T> operator*(const Vector4<T> &rhs) const;
-    Vector3<T> operator*(const Vector3<T> &rhs) const;
     // conversion to pointer operator (for passing the instance as a T*)
     operator T *() { return (T *)data; }
     operator const T *() const { return (const T *)data; }
 };
+
+// unary operators
+template <typename T> Matrix4<T> operator-(const Matrix4<T> &m1);
+// matrix operations
+template <typename T> Matrix4<T> operator+(const Matrix4<T> &m1, const Matrix4<T> &m2);
+template <typename T> Matrix4<T> operator-(const Matrix4<T> &m1, const Matrix4<T> &m2);
+template <typename T> Matrix4<T> operator*(const Matrix4<T> &m1, const Matrix4<T> &m2);
+// scalar operations
+template <typename T> Matrix4<T> operator+(const Matrix4<T> &m1, T s);
+template <typename T> Matrix4<T> operator+(T s, const Matrix4<T> &m1);
+template <typename T> Matrix4<T> operator-(const Matrix4<T> &m1, T s);
+template <typename T> Matrix4<T> operator-(T s, const Matrix4<T> &m1);
+template <typename T> Matrix4<T> operator*(const Matrix4<T> &m1, T s);
+template <typename T> Matrix4<T> operator*(T s, const Matrix4<T> &m1);
+template <typename T> Matrix4<T> operator/(const Matrix4<T> &m1, T s);
+// vector operations
+template <typename T> Vector4<T> operator*(const Matrix4<T> &m1, const Vector4<T> &rhs);
+template <typename T> Vector3<T> operator*(const Matrix4<T> &m1, const Vector3<T> &rhs);
 
 /// Quaternion
 template <typename T> struct Quaternion {
@@ -491,6 +516,176 @@ template <typename T> inline Vector4<T> operator*(T s, const Vector4<T> &v) {
 template <typename T> inline Vector4<T> operator/(const Vector4<T> &v, T s) {
     return Vector4<T>(v.x/s, v.y/s, v.z/s, v.w/s);
 }
+
+// matrix3
+template <typename T> inline Matrix3<T> operator-(const Matrix3<T> &m1) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = -m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator+(const Matrix3<T> &m1, const Matrix3<T> &m2) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] + m2.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator-(const Matrix3<T> &m1, const Matrix3<T> &m2) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] - m2.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator*(const Matrix3<T> &m1, const Matrix3<T> &m2) {
+    Matrix3<T> w;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            T n = T(0);
+            for (int k = 0; k < 3; k++)
+                n += m1(i, k) * m2(k, j);
+            w(i, j) = n;
+        }
+    }
+    return w;
+}
+// scalar operations
+template <typename T> inline Matrix3<T> operator+(const Matrix3<T> &m1, T s) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] + s;
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator+(T s, const Matrix3<T> &m1) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = s + m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator-(const Matrix3<T> &m1, T s) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] - s;
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator-(T s, const Matrix3<T> &m1) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = s - m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator*(const Matrix3<T> &m1, T s) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] * s;
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator*(T s, const Matrix3<T> &m1) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = s * m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix3<T> operator/(const Matrix3<T> &m1, T s) {
+    Matrix3<T> ret;
+    for (int i = 0; i < 9; i++)
+        ret.data[i] = m1.data[i] / s;
+    return ret;
+}
+// vector operations
+template <typename T> inline Vector3<T> operator*(const Matrix3<T> &m1, const Vector3<T> &rhs) {
+    return Vector3<T>(m1.data[0] * rhs.x + m1.data[3] * rhs.y + m1.data[6] * rhs.z,
+                      m1.data[1] * rhs.x + m1.data[4] * rhs.y + m1.data[7] * rhs.z,
+                      m1.data[2] * rhs.x + m1.data[5] * rhs.y + m1.data[8] * rhs.z);
+}
+
+
+// matrix4
+template <typename T> inline Matrix4<T> operator-(const Matrix4<T> &m1) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = -m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator+(const Matrix4<T> &m1, const Matrix4<T> &m2) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] + m2.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator-(const Matrix4<T> &m1, const Matrix4<T> &m2) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] - m2.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator*(const Matrix4<T> &m1, const Matrix4<T> &m2) {
+    Matrix4<T> w;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            T n = T(0);
+            for (int k = 0; k < 4; k++)
+                n += m1(i, k) * m2(k, j);
+            w(i, j) = n;
+        }
+    }
+    return w;
+}
+// scalar operations
+template <typename T> inline Matrix4<T> operator+(const Matrix4<T> &m1, T s) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] + s;
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator+(T s, const Matrix4<T> &m1) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = s + m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator-(const Matrix4<T> &m1, T s) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] - s;
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator-(T s, const Matrix4<T> &m1) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = s - m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator*(const Matrix4<T> &m1, T s) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] * s;
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator*(T s, const Matrix4<T> &m1) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = s * m1.data[i];
+    return ret;
+}
+template <typename T> inline Matrix4<T> operator/(const Matrix4<T> &m1, T s) {
+    Matrix4<T> ret;
+    for (int i = 0; i < 16; i++)
+        ret.data[i] = m1.data[i] / s;
+    return ret;
+}
+// vector operations
+template <typename T> inline Vector4<T> operator*(const Matrix4<T> &m1, const Vector4<T> &rhs) {
+    return Vector4<T>(m1.data[0] * rhs.x + m1.data[4] * rhs.y + m1.data[8] * rhs.z  + m1.data[12] * rhs.w,
+                      m1.data[1] * rhs.x + m1.data[5] * rhs.y + m1.data[9] * rhs.z  + m1.data[13] * rhs.w,
+                      m1.data[2] * rhs.x + m1.data[6] * rhs.y + m1.data[10] * rhs.z + m1.data[14] * rhs.w,
+                      m1.data[3] * rhs.x + m1.data[7] * rhs.y + m1.data[11] * rhs.z + m1.data[15] * rhs.w);
+}
+template <typename T> inline Vector3<T> operator*(const Matrix4<T> &m1, const Vector3<T> &rhs) {
+    return Vector3<T>(m1.data[0] * rhs.x + m1.data[4] * rhs.y + m1.data[8] * rhs.z + m1.data[12],
+                      m1.data[1] * rhs.x + m1.data[5] * rhs.y + m1.data[9] * rhs.z + m1.data[13],
+                      m1.data[2] * rhs.x + m1.data[6] * rhs.y + m1.data[10] * rhs.z + m1.data[14]);
+}
+
 
 } // namespace math
 

@@ -34,5 +34,5 @@ template struct math::Matrix4<int64_t>;
 template struct math::Matrix4<float>;
 template struct math::Matrix4<double>;
 
-template struct math::Quaternion<float>;
-template struct math::Quaternion<double>;
+// template struct math::Quaternion<float>;
+// template struct math::Quaternion<double>;

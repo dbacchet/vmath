@@ -378,7 +378,17 @@ template <typename T> inline Matrix3<T>::Matrix3(const Matrix3<T> &src) {
 }
 
 template <typename T> inline Matrix3<T>::Matrix3(const T *dt) {
-    std::memcpy(data, dt, 9 * sizeof(T));
+    for (int k=0; k<9; k++) {
+        data[k] = dt[(k%3)*3 + k/3];
+    }
+}
+
+template <typename T> inline Matrix3<T>::Matrix3(std::initializer_list<T> init) {
+    assert(init.size()>=9);
+    const T *v = init.begin();
+    for (int k=0; k<9; k++) {
+        data[k] = v[(k%3)*3 + k/3];
+    }
 }
 
 template <typename T> inline bool Matrix3<T>::operator==(const Matrix3<T> &rhs) const {
@@ -390,6 +400,18 @@ template <typename T> inline bool Matrix3<T>::operator==(const Matrix3<T> &rhs) 
 
 template <typename T> inline bool Matrix3<T>::operator!=(const Matrix3<T> &rhs) const {
     return !(*this == rhs);
+}
+
+template <typename T> inline T &Matrix3<T>::operator()(int i, int j) {
+    assert(i >= 0 && i < 3);
+    assert(j >= 0 && j < 3);
+    return data[j * 3 + i];
+}
+
+template <typename T> inline const T &Matrix3<T>::operator()(int i, int j) const {
+    assert(i >= 0 && i < 3);
+    assert(j >= 0 && j < 3);
+    return data[j * 3 + i];
 }
 
 template <typename T> inline T &Matrix3<T>::at(int x, int y) {
@@ -404,82 +426,11 @@ template <typename T> inline const T &Matrix3<T>::at(int x, int y) const {
     return data[x * 3 + y];
 }
 
-template <typename T> inline T &Matrix3<T>::operator()(int i, int j) {
-    assert(i >= 1 && i <= 3);
-    assert(j >= 1 && j <= 3);
-    return data[(j - 1) * 3 + i - 1];
-}
-
-template <typename T> inline const T &Matrix3<T>::operator()(int i, int j) const {
-    assert(i >= 1 && i <= 3);
-    assert(j >= 1 && j <= 3);
-    return data[(j - 1) * 3 + i - 1];
-}
-
 template <typename T> inline Matrix3<T> &Matrix3<T>::operator=(const Matrix3<T> &rhs) {
     std::memcpy(data, rhs.data, sizeof(T) * 9);
     return *this;
 }
 
-template <typename T> inline Matrix3<T> &Matrix3<T>::operator=(const T *rhs) {
-    std::memcpy(data, rhs, sizeof(T) * 9);
-    return *this;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator+(const Matrix3<T> &rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] + rhs.data[i];
-    return ret;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator-(const Matrix3<T> &rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] - rhs.data[i];
-    return ret;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator*(Matrix3<T> rhs) const {
-    Matrix3<T> w;
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            T n = 0;
-            for (int k = 0; k < 3; k++)
-                n += rhs.at(i, k) * at(k, j);
-            w.at(i, j) = n;
-        }
-    }
-    return w;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator+(T rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] + rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator-(T rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] - rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator*(T rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] * rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix3<T> Matrix3<T>::operator/(T rhs) const {
-    Matrix3<T> ret;
-    for (int i = 0; i < 9; i++)
-        ret.data[i] = data[i] / rhs;
-    return ret;
-}
 template <typename T> inline void Matrix3<T>::operator+=(T rhs) {
     for (int i = 0; i < 9; i++)
         data[i] += rhs;
@@ -500,11 +451,6 @@ template <typename T> inline void Matrix3<T>::operator/=(T rhs) {
         data[i] /= rhs;
 }
 
-template <typename T> inline Vector3<T> Matrix3<T>::operator*(const Vector3<T> &rhs) const {
-    return Vector3<T>(data[0] * rhs.x + data[3] * rhs.y + data[6] * rhs.z,
-                      data[1] * rhs.x + data[4] * rhs.y + data[7] * rhs.z,
-                      data[2] * rhs.x + data[5] * rhs.y + data[8] * rhs.z);
-}
 
 // Matrix4<T> implementation
 
@@ -516,8 +462,19 @@ inline Matrix4<T>::Matrix4() // default to identity
 }
 
 template <typename T> inline Matrix4<T>::Matrix4(const T *dt) {
-    std::memcpy(data, dt, 16 * sizeof(T));
+    for (int k=0; k<16; k++) {
+        data[k] = dt[(k%4)*4 + k/4];
+    }
 }
+
+template <typename T> inline Matrix4<T>::Matrix4(std::initializer_list<T> init) {
+    assert(init.size()>=16);
+    const T *v = init.begin();
+    for (int k=0; k<16; k++) {
+        data[k] = v[(k%4)*4 + k/4];
+    }
+}
+
 
 template <typename T> inline Matrix4<T>::Matrix4(const Matrix4<T> &src) {
     std::memcpy(data, src.data, 16 * sizeof(T));
@@ -548,15 +505,15 @@ template <typename T> inline const T &Matrix4<T>::at(int x, int y) const {
 }
 
 template <typename T> inline T &Matrix4<T>::operator()(int i, int j) {
-    assert(i >= 1 && i <= 4);
-    assert(j >= 1 && j <= 4);
-    return data[(j - 1) * 4 + i - 1];
+    assert(i >= 0 && i < 4);
+    assert(j >= 0 && j < 4);
+    return data[j * 4 + i];
 }
 
 template <typename T> inline const T &Matrix4<T>::operator()(int i, int j) const {
-    assert(i >= 1 && i <= 4);
-    assert(j >= 1 && j <= 4);
-    return data[(j - 1) * 4 + i - 1];
+    assert(i >= 0 && i < 4);
+    assert(j >= 0 && j < 4);
+    return data[j * 4 + i];
 }
 
 template <typename T> inline Matrix4<T> &Matrix4<T>::operator=(const Matrix4<T> &rhs) {
@@ -564,60 +521,6 @@ template <typename T> inline Matrix4<T> &Matrix4<T>::operator=(const Matrix4<T> 
     return *this;
 }
 
-template <typename T> inline Matrix4<T> Matrix4<T>::operator+(const Matrix4<T> &rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] + rhs.data[i];
-    return ret;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator-(const Matrix4<T> &rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] - rhs.data[i];
-    return ret;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator*(Matrix4<T> rhs) const {
-    Matrix4<T> w;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            T n = 0;
-            for (int k = 0; k < 4; k++)
-                n += rhs.at(i, k) * at(k, j);
-            w.at(i, j) = n;
-        }
-    }
-    return w;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator+(T rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] + rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator-(T rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] - rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator*(T rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] * rhs;
-    return ret;
-}
-
-template <typename T> inline Matrix4<T> Matrix4<T>::operator/(T rhs) const {
-    Matrix4<T> ret;
-    for (int i = 0; i < 16; i++)
-        ret.data[i] = data[i] / rhs;
-    return ret;
-}
 template <typename T> inline void Matrix4<T>::operator+=(T rhs) {
     for (int i = 0; i < 16; i++)
         data[i] += rhs;
@@ -638,19 +541,6 @@ template <typename T> inline void Matrix4<T>::operator/=(T rhs) {
         data[i] /= rhs;
 }
 
-// vector operators
-template <typename T> inline Vector4<T> Matrix4<T>::operator*(const Vector4<T> &rhs) const {
-    return Vector4<T>(data[0] * rhs.x + data[4] * rhs.y + data[8] * rhs.z + data[12] * rhs.w,
-                      data[1] * rhs.x + data[5] * rhs.y + data[9] * rhs.z + data[13] * rhs.w,
-                      data[2] * rhs.x + data[6] * rhs.y + data[10] * rhs.z + data[14] * rhs.w,
-                      data[3] * rhs.x + data[7] * rhs.y + data[11] * rhs.z + data[15] * rhs.w);
-}
-
-template <typename T> inline Vector3<T> Matrix4<T>::operator*(const Vector3<T> &rhs) const {
-    return Vector3<T>(data[0] * rhs.x + data[4] * rhs.y + data[8] * rhs.z + data[12],
-                      data[1] * rhs.x + data[5] * rhs.y + data[9] * rhs.z + data[13],
-                      data[2] * rhs.x + data[6] * rhs.y + data[10] * rhs.z + data[14]);
-}
 
 // Quaternion<T> implementation
 
