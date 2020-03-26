@@ -546,115 +546,65 @@ template <typename T> inline void Matrix4<T>::operator/=(T rhs) {
 
 template <typename T>
 inline Quaternion<T>::Quaternion()
-: w(0)
-, v(0, 0, 0) {}
+: w(1), x(0), y(0), z(0) {}
 
 template <typename T>
 inline Quaternion<T>::Quaternion(const Quaternion<T> &q)
-: w(q.w)
-, v(q.v) {}
-
-template <typename T>
-inline Quaternion<T>::Quaternion(T w_, const Vector3<T> &v_)
-: w(w_)
-, v(v_) {}
-
-template <typename T>
-inline Quaternion<T>::Quaternion(T w_, T x, T y, T z)
-: w(w_)
-, v(x, y, z) {}
+: w(q.w), x(q.x), y(q.y), z(q.z) {}
 
 template <typename T> inline Quaternion<T> &Quaternion<T>::operator=(const Quaternion<T> &rhs) {
-    v = rhs.v;
     w = rhs.w;
+    x = rhs.x;
+    y = rhs.y;
+    z = rhs.z;
     return *this;
-}
-
-template <typename T> inline Quaternion<T> Quaternion<T>::operator+(const Quaternion<T> &rhs) const {
-    const Quaternion<T> &lhs = *this;
-    return Quaternion<T>(lhs.w + rhs.w, lhs.v + rhs.v);
-}
-
-template <typename T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T> &rhs) const {
-    const Quaternion<T> &lhs = *this;
-    return Quaternion<T>(lhs.w * rhs.w - lhs.v.x * rhs.v.x - lhs.v.y * rhs.v.y - lhs.v.z * rhs.v.z,
-                         lhs.w * rhs.v.x + lhs.v.x * rhs.w + lhs.v.y * rhs.v.z - lhs.v.z * rhs.v.y,
-                         lhs.w * rhs.v.y - lhs.v.x * rhs.v.z + lhs.v.y * rhs.w + lhs.v.z * rhs.v.x,
-                         lhs.w * rhs.v.z + lhs.v.x * rhs.v.y - lhs.v.y * rhs.v.x + lhs.v.z * rhs.w);
-}
-
-template <typename T> inline Quaternion<T> Quaternion<T>::operator-(const Quaternion<T> &rhs) const {
-    const Quaternion<T> &lhs = *this;
-    return Quaternion<T>(lhs.w - rhs.w, lhs.v - rhs.v);
 }
 
 template <typename T> inline void Quaternion<T>::operator+=(const Quaternion<T> &rhs) {
     w += rhs.w;
-    v += rhs.v;
+    x += rhs.x;
+    y += rhs.y;
+    z += rhs.z;
 }
 
 template <typename T> inline void Quaternion<T>::operator-=(const Quaternion<T> &rhs) {
     w -= rhs.w;
-    v -= rhs.v;
+    x -= rhs.x;
+    y -= rhs.y;
+    z -= rhs.z;
 }
 
-template <typename T> inline void Quaternion<T>::operator*=(const Quaternion<T> &rhs) {
-    Quaternion q = (*this) * rhs;
-    v = q.v;
-    w = q.w;
+template <typename T> inline void Quaternion<T>::operator+=(T rhs) {
+    w += rhs;
+    x += rhs;
+    y += rhs;
+    z += rhs;
 }
 
-template <typename T> inline Quaternion<T> Quaternion<T>::operator*(T rhs) const {
-    return Quaternion<T>(w * rhs, v * rhs);
+template <typename T> inline void Quaternion<T>::operator-=(T rhs) {
+    w -= rhs;
+    x -= rhs;
+    y -= rhs;
+    z -= rhs;
 }
 
 template <typename T> inline void Quaternion<T>::operator*=(T rhs) {
     w *= rhs;
-    v *= rhs;
+    x *= rhs;
+    y *= rhs;
+    z *= rhs;
 }
 
 template <typename T> inline bool Quaternion<T>::operator==(const Quaternion<T> &rhs) const {
     const Quaternion<T> &lhs = *this;
-    return (fabs(lhs.w - rhs.w) < VMATH_EPSILON) && lhs.v == rhs.v;
+    return (fabs(lhs.w - rhs.w) < VMATH_EPSILON) 
+        && (fabs(lhs.x - rhs.x) < VMATH_EPSILON)
+        && (fabs(lhs.y - rhs.y) < VMATH_EPSILON)
+        && (fabs(lhs.z - rhs.z) < VMATH_EPSILON);
 }
 
 template <typename T> inline bool Quaternion<T>::operator!=(const Quaternion<T> &rhs) const {
     return !(*this == rhs);
-}
-
-template <typename T> inline Quaternion<T> Quaternion<T>::operator-() const {
-    return Quaternion<T>(-w, -v);
-}
-
-template <typename T> inline Quaternion<T> Quaternion<T>::operator~() const {
-    return Quaternion<T>(w, -v);
-}
-
-template <typename T> inline Vector3<T> Quaternion<T>::operator*(const Vector3<T> &vec) const {
-    // implements: res = rot*point* ~rot
-    // where rot is the quaternion and point a quat where v.x/y/z contains point coords
-
-    T rw = w * 0 - v.x * vec.x - v.y * vec.y - v.z * vec.z;
-    T rx = w * vec.x + v.x * 0 + v.y * vec.z - v.z * vec.y;
-    T ry = w * vec.y - v.x * vec.z + v.y * 0 + v.z * vec.x;
-    T rz = w * vec.z + v.x * vec.y - v.y * vec.x + v.z * 0;
-    // w coord is: rw*w   - rx*v.x - ry*v.y - rz*v.z
-    return Vector3<T>(-rw * v.x + rx * w - ry * v.z + rz * v.y, -rw * v.y + rx * v.z + ry * w - rz * v.x,
-                      -rw * v.z - rx * v.y + ry * v.x + rz * w);
-}
-
-template <typename T> inline Vector4<T> Quaternion<T>::operator*(const Vector4<T> &vec) const {
-    // implements: res = rot*point* ~rot
-    // where rot is the quaternion and point a quat where v.x/y/z contains point coords
-
-    T rw = w * 0 - v.x * vec.x - v.y * vec.y - v.z * vec.z;
-    T rx = w * vec.x + v.x * 0 + v.y * vec.z - v.z * vec.y;
-    T ry = w * vec.y - v.x * vec.z + v.y * 0 + v.z * vec.x;
-    T rz = w * vec.z + v.x * vec.y - v.y * vec.x + v.z * 0;
-    // w coord is: rw*w   - rx*v.x - ry*v.y - rz*v.z
-    return Vector4<T>(-rw * v.x + rx * w - ry * v.z + rz * v.y, -rw * v.y + rx * v.z + ry * w - rz * v.x,
-                      -rw * v.z - rx * v.y + ry * v.x + rz * w,
-                      vec.w); // last component kept from source
 }
 
 } // namespace math
