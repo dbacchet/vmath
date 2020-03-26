@@ -40,3 +40,9 @@ jobs:
       with:
         name: coverage-report
         path: report.tgz
+    
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: bazel-out/_coverage/_coverage_report.dat
