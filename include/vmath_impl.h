@@ -50,6 +50,11 @@ template <typename T> void normalize(Vector2<T> &vec) {
     vec.y /= s;
 }
 
+template <typename T> Vector2<T> normalized(const Vector2<T> &vec) {
+    T s = length(vec);
+    return Vector2<T>(T(vec.x/s), T(vec.y/s));
+}
+
 template <typename T> inline Vector2<T> lerp(const Vector2<T> &v1, const Vector2<T> &v2, T fact) {
     return v1 + (v2 - v1) * fact;
 }
@@ -68,6 +73,11 @@ template <typename T> void normalize(Vector3<T> &vec) {
     vec.x /= s;
     vec.y /= s;
     vec.z /= s;
+}
+
+template <typename T> Vector3<T> normalized(const Vector3<T> &vec) {
+    T s = length(vec);
+    return Vector3<T>(T(vec.x/s), T(vec.y/s), T(vec.z/s));
 }
 
 template <typename T> inline Vector3<T> lerp(const Vector3<T> &v1, const Vector3<T> &v2, T fact) {
@@ -89,6 +99,11 @@ template <typename T> inline void normalize(Vector4<T> &vec) {
     vec.y /= s;
     vec.z /= s;
     vec.w /= s;
+}
+
+template <typename T> Vector4<T> normalized(const Vector4<T> &vec) {
+    T s = length(vec);
+    return Vector4<T>(T(vec.x/s), T(vec.y/s), T(vec.z/s), T(vec.w/s));
 }
 
 template <typename T> inline Vector4<T> lerp(const Vector4<T> &v1, const Vector4<T> &v2, T fact) {

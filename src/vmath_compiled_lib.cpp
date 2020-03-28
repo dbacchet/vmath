@@ -46,16 +46,19 @@ namespace math { \
     template T          length<T>(const Vector2<T> &vec); \
     template T          length2<T>(const Vector2<T> &vec); \
     template void       normalize<T>(Vector2<T> &vec); \
+    template Vector2<T> normalized<T>(const Vector2<T> &vec); \
     template Vector2<T> lerp<T>(const Vector2<T>& v1, const Vector2<T>& v2, T fact); \
 \
     template T          length<T>(const Vector3<T>& vec); \
     template T          length2<T>(const Vector3<T>& vec); \
     template void       normalize<T>(Vector3<T>& vec); \
+    template Vector3<T> normalized<T>(const Vector3<T> &vec); \
     template Vector3<T> lerp<T>(const Vector3<T>& v1, const Vector3<T>& v2, T fact); \
 \
     template T          length<T>(const Vector4<T>& vec); \
     template T          length2<T>(const Vector4<T>& vec); \
     template void       normalize<T>(Vector4<T>& vec); \
+    template Vector4<T> normalized<T>(const Vector4<T> &vec); \
     template Vector4<T> lerp<T>(const Vector4<T>& v1, const Vector4<T>& v2, T fact); \
 \
 }

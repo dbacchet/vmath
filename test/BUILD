@@ -6,6 +6,7 @@ filegroup(
             'test_vmath_types_matrix3.cpp',
             'test_vmath_types_matrix4.cpp',
             'test_vmath_types_quaternion.cpp',
+            'test_vmath_vector2.cpp',
             'test_vmath.cpp',
            ],
 )
