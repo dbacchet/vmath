@@ -142,6 +142,11 @@ template <typename T> inline T det(const Matrix3<T> &mat) {
 }
 
 template <typename T> inline Matrix3<T> inverse(const Matrix3<T> &mat) {
+    T d = det(mat);
+    /// \todo better API in case the inverse does not exist. See https://github.com/dbacchet/vmath/issues/3
+    if (std::abs(d)<VMATH_EPSILON) {
+        return Matrix3<T>(); // return null matrix
+    }
     Matrix3<T> ret;
     ret.at(0, 0) = mat.at(1, 1) * mat.at(2, 2) - mat.at(2, 1) * mat.at(1, 2);
     ret.at(0, 1) = mat.at(2, 1) * mat.at(0, 2) - mat.at(0, 1) * mat.at(2, 2);
@@ -152,7 +157,7 @@ template <typename T> inline Matrix3<T> inverse(const Matrix3<T> &mat) {
     ret.at(2, 0) = mat.at(1, 0) * mat.at(2, 1) - mat.at(2, 0) * mat.at(1, 1);
     ret.at(2, 1) = mat.at(2, 0) * mat.at(0, 1) - mat.at(0, 0) * mat.at(2, 1);
     ret.at(2, 2) = mat.at(0, 0) * mat.at(1, 1) - mat.at(1, 0) * mat.at(0, 1);
-    return ret * T(T(1) / det(mat));
+    return ret * T(T(1) / d);
 }
 
 // namespace matrix4
@@ -202,6 +207,11 @@ template <typename T> T det(const Matrix4<T> &m) {
 }
 /// calc inverse matrix
 template <typename T> Matrix4<T> inverse(const Matrix4<T> &m) {
+    /// \todo better API in case the inverse does not exist. See https://github.com/dbacchet/vmath/issues/3
+    T d = det(m);
+    if (std::abs(d)<VMATH_EPSILON) {
+        return Matrix4<T>(); // return null matrix
+    }
     Matrix4<T> ret;
     ret.at(0, 0) = m.at(2, 1) * m.at(3, 2) * m.at(1, 3) - m.at(3, 1) * m.at(2, 2) * m.at(1, 3) +
                    m.at(3, 1) * m.at(1, 2) * m.at(2, 3) - m.at(1, 1) * m.at(3, 2) * m.at(2, 3) -
@@ -251,7 +261,7 @@ template <typename T> Matrix4<T> inverse(const Matrix4<T> &m) {
     ret.at(3, 3) = m.at(1, 0) * m.at(2, 1) * m.at(0, 2) - m.at(2, 0) * m.at(1, 1) * m.at(0, 2) +
                    m.at(2, 0) * m.at(0, 1) * m.at(1, 2) - m.at(0, 0) * m.at(2, 1) * m.at(1, 2) -
                    m.at(1, 0) * m.at(0, 1) * m.at(2, 2) + m.at(0, 0) * m.at(1, 1) * m.at(2, 2);
-    return ret / det(m);
+    return ret / d;
 }
 /// transpose
 template <typename T> inline void transpose(Matrix4<T> &mat) {
@@ -397,6 +407,22 @@ template <typename T> inline Quaternion<T> slerp(const Quaternion<T> &q1, const 
 // ///////// //
 
 namespace factory {
+
+// create an identity matrix
+template <typename T> Matrix3<T> matrix3_identity() {
+    Matrix3<T> m;
+    for (int i = 0; i < 9; i++)
+        m.data[i] = (i % 4) ? T(0) : T(1);
+    return m;
+}
+
+// create an identity matrix
+template <typename T> Matrix4<T> matrix4_identity() {
+    Matrix3<T> m;
+    for (int i = 0; i < 16; i++)
+        m.data[i] = (i % 5) ? T(0) : T(1);
+    return m;
+}
 
 /// create a translation matrix
 template <typename T> Matrix4<T> create_translation(const Vector3<T> &v) {

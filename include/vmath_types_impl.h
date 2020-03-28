@@ -367,10 +367,10 @@ template <typename T> inline void Vector4<T>::operator/=(T rhs) {
 // Matrix3<T> implementation
 
 template <typename T>
-inline Matrix3<T>::Matrix3() ///< default to identity matrix
+inline Matrix3<T>::Matrix3() ///< default to null matrix
 {
     for (int i = 0; i < 9; i++)
-        data[i] = (i % 4) ? T(0) : T(1);
+        data[i] = T(0);
 }
 
 template <typename T> inline Matrix3<T>::Matrix3(const Matrix3<T> &src) {
@@ -458,7 +458,7 @@ template <typename T>
 inline Matrix4<T>::Matrix4() // default to identity
 {
     for (int i = 0; i < 16; i++)
-        data[i] = (i % 5) ? T(0) : T(1);
+        data[i] = T(0);
 }
 
 template <typename T> inline Matrix4<T>::Matrix4(const T *dt) {

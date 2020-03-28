@@ -49,14 +49,14 @@ void print_matrix(const math::Matrix3<T> &m) {
 
 TEST(Matrix3x3, constructors) {
     // default constructor
-    std::array<double,9> identity = {1.0, 0.0, 0.0, // row0
-                                     0.0, 1.0, 0.0, // row1
-                                     0.0, 0.0, 1.0};// row2
+    std::array<double,9> zero = {0.0, 0.0, 0.0, // row0
+                                 0.0, 0.0, 0.0, // row1
+                                 0.0, 0.0, 0.0};// row2
     std::array<double,9> sample = {1.1, 2.2, 3.3, // row0
                                    4.4, 5.5, 6.6, // row1
                                    7.7, 8.8, 9.9};// row2
     math::Matrix3d m1;
-    ASSERT_PRED2(matrix_array_equal<double>, m1, identity.data());
+    ASSERT_PRED2(matrix_array_equal<double>, m1, zero.data());
     math::Matrix3d m2(sample.data());
     ASSERT_PRED2(matrix_array_equal<double>, m2, sample.data());
     // copy constructor

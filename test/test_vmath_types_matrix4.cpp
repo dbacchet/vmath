@@ -49,16 +49,16 @@ void print_matrix(const math::Matrix4<T> &m) {
 
 TEST(Matrix4x4, constructors) {
     // default constructor
-    std::array<double,16> identity = {1.0, 0.0, 0.0, 0.0, // row0
-                                      0.0, 1.0, 0.0, 0.0, // row1
-                                      0.0, 0.0, 1.0, 0.0, // row2
-                                      0.0, 0.0, 0.0, 1.0};// row3
+    std::array<double,16> zero = {0.0, 0.0, 0.0, 0.0, // row0
+                                  0.0, 0.0, 0.0, 0.0, // row1
+                                  0.0, 0.0, 0.0, 0.0, // row2
+                                  0.0, 0.0, 0.0, 0.0};// row3
     std::array<double,16> sample = {11.1, 12.2, 13.3, 14.4, 
                                     21.1, 22.2, 23.3, 24.4, 
                                     31.1, 32.2, 33.3, 34.4, 
                                     41.1, 42.2, 43.3, 44.4};
     math::Matrix4d m1;
-    ASSERT_PRED2(matrix_array_equal<double>, m1, identity.data());
+    ASSERT_PRED2(matrix_array_equal<double>, m1, zero.data());
     math::Matrix4d m2(sample.data());
     ASSERT_PRED2(matrix_array_equal<double>, m2, sample.data());
     // copy constructor
