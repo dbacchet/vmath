@@ -246,41 +246,6 @@ template <typename T> inline void transpose(Matrix4<T> &mat) {
             ret.at(i, j) = mat.at(j, i);
     mat = ret;
 }
-/// create a translation matrix
-template <typename T> Matrix4<T> create_translation(const Vector3<T> &v) {
-    Matrix4<T> ret;
-    set_translation(ret, v);
-    return ret;
-}
-
-/// create a transformation matrix
-template <typename T> Matrix4<T> create_transformation(const Vector3<T> &v, const Quaternion<T> &q) {
-    Matrix4<T> ret = transform(q);
-    set_translation(ret, v);
-    return ret;
-}
-
-template <typename T> Matrix4<T> create_lookat(const Vector3<T> &eye, const Vector3<T> &to, const Vector3<T> &up) {
-    // set rotation using axis/angle
-    Vector3<T> z(eye - to);
-    normalize(z);
-    Vector3<T> x = up.cross(z);
-    normalize(x);
-    Vector3<T> y = z.cross(x);
-
-    Matrix4<T> m = create_translation(eye);
-    m(1, 1) = x.x;
-    m(1, 2) = y.x;
-    m(1, 3) = z.x;
-    m(2, 1) = x.y;
-    m(2, 2) = y.y;
-    m(2, 3) = z.y;
-    m(3, 1) = x.z;
-    m(3, 2) = y.z;
-    m(3, 3) = z.z;
-
-    return m;
-}
 
 /// linear interpolation
 template <typename T> inline Matrix4<T> lerp(const Matrix4<T> &m1, const Matrix4<T> &m2, T fact) {
@@ -316,101 +281,6 @@ template <typename T> inline Vector3<T> axis(const Quaternion<T> &q) {
 
 template <typename T> inline T angle(const Quaternion<T> &q) {
     return (T)(2 * acos(q.w));
-}
-
-template <typename T> inline Quaternion<T> from_euler_321(T x, T y, T z) {
-    Quaternion<T> ret = from_axis_angle(Vector3<T>(1, 0, 0), x) * from_axis_angle(Vector3<T>(0, 1, 0), y) *
-                        from_axis_angle(Vector3<T>(0, 0, 1), z);
-    return ret;
-}
-
-template <typename T> inline Quaternion<T> from_axis_angle(Vector3<T> axis, float angle) {
-    T sa2 = (T)sin(angle / 2);
-    T ca2 = (T)cos(angle / 2);
-    return Quaternion<T>(ca2, axis.x * sa2, axis.y * sa2, axis.z * sa2);
-}
-
-template <typename T> Quaternion<T> from_matrix(const Matrix4<T> &m) {
-    Quaternion<T> q;
-
-    T tr, s;
-    tr = m(1, 1) + m(2, 2) + m(3, 3);
-    if (tr >= VMATH_EPSILON) {
-        s = (T)(0.5 / sqrt(tr + 1.0));
-        q.w = (T)(0.25 / s);
-        q.x = (m(3, 2) - m(2, 3)) * s;
-        q.y = (m(1, 3) - m(3, 1)) * s;
-        q.z = (m(2, 1) - m(1, 2)) * s;
-    } else {
-        T d0 = m(1, 1);
-        T d1 = m(2, 2);
-        T d2 = m(3, 3);
-
-        char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
-
-        if (bigIdx == 0) {
-            s = (T)(2.0 * sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3)));
-            q.w = (m(3, 2) - m(2, 3)) / s;
-            q.x = (T)(0.25 * s);
-            q.y = (m(1, 2) + m(2, 1)) / s;
-            q.z = (m(1, 3) + m(3, 1)) / s;
-        } else if (bigIdx == 1) {
-            s = (T)(2.0 * sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3)));
-            q.w = (m(1, 3) - m(3, 1)) / s;
-            q.x = (m(1, 2) + m(2, 1)) / s;
-            q.y = (T)(0.25 * s);
-            q.z = (m(2, 3) + m(3, 2)) / s;
-        } else {
-            s = (T)(2.0 * sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2)));
-            q.w = (m(2, 1) - m(1, 2)) / s;
-            q.x = (m(1, 3) + m(3, 1)) / s;
-            q.y = (m(2, 3) + m(3, 2)) / s;
-            q.z = (T)(0.25 * s);
-        }
-    }
-
-    return q;
-}
-
-template <typename T> Quaternion<T> from_matrix(const Matrix3<T> &m) {
-    Quaternion<T> q;
-
-    T tr, s;
-    tr = m(1, 1) + m(2, 2) + m(3, 3);
-    if (tr >= VMATH_EPSILON) {
-        s = T(0.5) / (T)sqrt(tr + 1.0);
-        q.w = T(0.25) / s;
-        q.x = (m(3, 2) - m(2, 3)) * s;
-        q.y = (m(1, 3) - m(3, 1)) * s;
-        q.z = (m(2, 1) - m(1, 2)) * s;
-    } else {
-        T d0 = m(1, 1);
-        T d1 = m(2, 2);
-        T d2 = m(3, 3);
-
-        char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
-
-        if (bigIdx == 0) {
-            s = T(2.0) * (T)sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3));
-            q.w = (m(3, 2) - m(2, 3)) / s;
-            q.x = T(0.25) * s;
-            q.y = (m(1, 2) + m(2, 1)) / s;
-            q.z = (m(1, 3) + m(3, 1)) / s;
-        } else if (bigIdx == 1) {
-            s = T(2.0) * (T)sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3));
-            q.w = (m(1, 3) - m(3, 1)) / s;
-            q.x = (m(1, 2) + m(2, 1)) / s;
-            q.y = T(0.25) * s;
-            q.z = (m(2, 3) + m(3, 2)) / s;
-        } else {
-            s = T(2.0) * (T)sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2));
-            q.w = (m(2, 1) - m(1, 2)) / s;
-            q.x = (m(1, 3) + m(3, 1)) / s;
-            q.y = (m(2, 3) + m(3, 2)) / s;
-            q.z = T(0.25) * s;
-        }
-    }
-    return q;
 }
 
 template <typename T> Matrix3<T> rot_matrix(const Quaternion<T> &q) {
@@ -506,5 +376,144 @@ template <typename T> inline Quaternion<T> slerp(const Quaternion<T> &q1, const 
 
     return out;
 }
+
+// ///////// //
+// factories //
+// ///////// //
+
+namespace factory {
+
+/// create a translation matrix
+template <typename T> Matrix4<T> create_translation(const Vector3<T> &v) {
+    Matrix4<T> ret;
+    set_translation(ret, v);
+    return ret;
+}
+
+/// create a transformation matrix
+template <typename T> Matrix4<T> create_transformation(const Vector3<T> &v, const Quaternion<T> &q) {
+    Matrix4<T> ret = transform(q);
+    set_translation(ret, v);
+    return ret;
+}
+
+template <typename T> Matrix4<T> create_lookat(const Vector3<T> &eye, const Vector3<T> &to, const Vector3<T> &up) {
+    // set rotation using axis/angle
+    Vector3<T> z(eye - to);
+    normalize(z);
+    Vector3<T> x = up.cross(z);
+    normalize(x);
+    Vector3<T> y = z.cross(x);
+
+    Matrix4<T> m = create_translation(eye);
+    m(1, 1) = x.x;
+    m(1, 2) = y.x;
+    m(1, 3) = z.x;
+    m(2, 1) = x.y;
+    m(2, 2) = y.y;
+    m(2, 3) = z.y;
+    m(3, 1) = x.z;
+    m(3, 2) = y.z;
+    m(3, 3) = z.z;
+
+    return m;
+}
+
+template <typename T> inline Quaternion<T> quat_from_euler_321(T x, T y, T z) {
+    Quaternion<T> ret = quat_from_axis_angle(Vector3<T>(1, 0, 0), x) * quat_from_axis_angle(Vector3<T>(0, 1, 0), y) *
+                        quat_from_axis_angle(Vector3<T>(0, 0, 1), z);
+    return ret;
+}
+
+template <typename T> inline Quaternion<T> quat_from_axis_angle(Vector3<T> axis, T angle) {
+    T sa2 = (T)sin(angle / 2);
+    T ca2 = (T)cos(angle / 2);
+    return Quaternion<T>(ca2, axis.x * sa2, axis.y * sa2, axis.z * sa2);
+}
+
+template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m) {
+    Quaternion<T> q;
+
+    T tr, s;
+    tr = m(1, 1) + m(2, 2) + m(3, 3);
+    if (tr >= VMATH_EPSILON) {
+        s = (T)(0.5 / sqrt(tr + 1.0));
+        q.w = (T)(0.25 / s);
+        q.x = (m(3, 2) - m(2, 3)) * s;
+        q.y = (m(1, 3) - m(3, 1)) * s;
+        q.z = (m(2, 1) - m(1, 2)) * s;
+    } else {
+        T d0 = m(1, 1);
+        T d1 = m(2, 2);
+        T d2 = m(3, 3);
+
+        char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
+
+        if (bigIdx == 0) {
+            s = (T)(2.0 * sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3)));
+            q.w = (m(3, 2) - m(2, 3)) / s;
+            q.x = (T)(0.25 * s);
+            q.y = (m(1, 2) + m(2, 1)) / s;
+            q.z = (m(1, 3) + m(3, 1)) / s;
+        } else if (bigIdx == 1) {
+            s = (T)(2.0 * sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3)));
+            q.w = (m(1, 3) - m(3, 1)) / s;
+            q.x = (m(1, 2) + m(2, 1)) / s;
+            q.y = (T)(0.25 * s);
+            q.z = (m(2, 3) + m(3, 2)) / s;
+        } else {
+            s = (T)(2.0 * sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2)));
+            q.w = (m(2, 1) - m(1, 2)) / s;
+            q.x = (m(1, 3) + m(3, 1)) / s;
+            q.y = (m(2, 3) + m(3, 2)) / s;
+            q.z = (T)(0.25 * s);
+        }
+    }
+
+    return q;
+}
+
+template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m) {
+    Quaternion<T> q;
+
+    T tr, s;
+    tr = m(1, 1) + m(2, 2) + m(3, 3);
+    if (tr >= VMATH_EPSILON) {
+        s = T(0.5) / (T)sqrt(tr + 1.0);
+        q.w = T(0.25) / s;
+        q.x = (m(3, 2) - m(2, 3)) * s;
+        q.y = (m(1, 3) - m(3, 1)) * s;
+        q.z = (m(2, 1) - m(1, 2)) * s;
+    } else {
+        T d0 = m(1, 1);
+        T d1 = m(2, 2);
+        T d2 = m(3, 3);
+
+        char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
+
+        if (bigIdx == 0) {
+            s = T(2.0) * (T)sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3));
+            q.w = (m(3, 2) - m(2, 3)) / s;
+            q.x = T(0.25) * s;
+            q.y = (m(1, 2) + m(2, 1)) / s;
+            q.z = (m(1, 3) + m(3, 1)) / s;
+        } else if (bigIdx == 1) {
+            s = T(2.0) * (T)sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3));
+            q.w = (m(1, 3) - m(3, 1)) / s;
+            q.x = (m(1, 2) + m(2, 1)) / s;
+            q.y = T(0.25) * s;
+            q.z = (m(2, 3) + m(3, 2)) / s;
+        } else {
+            s = T(2.0) * (T)sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2));
+            q.w = (m(2, 1) - m(1, 2)) / s;
+            q.x = (m(1, 3) + m(3, 1)) / s;
+            q.y = (m(2, 3) + m(3, 2)) / s;
+            q.z = T(0.25) * s;
+        }
+    }
+    return q;
+}
+
+} // namespace factory
 
 } // namespace math

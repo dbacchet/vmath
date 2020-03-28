@@ -38,6 +38,7 @@ template struct math::Quaternion<float>;
 template struct math::Quaternion<double>;
 
 
+#include "vmath.h"
 #include "vmath_impl.h"
 
 #define VMATH_FUNCTIONS_VECTOR(T) \
@@ -76,9 +77,6 @@ namespace math { \
     template T          det<T>(const Matrix4<T> &m); \
     template Matrix4<T> inverse<T>(const Matrix4<T> &m); \
     template void       transpose<T>(Matrix4<T> &mat); \
-    template Matrix4<T> create_translation<T>(const Vector3<T>& v); \
-    template Matrix4<T> create_transformation<T>(const Vector3<T>& v, const Quaternion<T> &q); \
-    template Matrix4<T> create_lookat<T>(const Vector3<T>& eye, const Vector3<T>& to, const Vector3<T>& up=Vector3<T>(T(0),T(0),T(1))); \
     template Matrix4<T> lerp<T>(const Matrix4<T>& m1, const Matrix4<T>& m2, T fact); \
 \
 }
@@ -90,16 +88,26 @@ namespace math { \
     template void          normalize<T>(Quaternion<T> &q); \
     template Vector3<T>    axis<T>(const Quaternion<T> &q); \
     template T             angle<T>(const Quaternion<T> &q); \
-    template Quaternion<T> from_euler_321<T>(T x, T y, T z); \
-    template Quaternion<T> from_axis_angle<T>(Vector3<T> axis, float angle); \
-    template Quaternion<T> from_matrix<T>(const Matrix4<T>& m); \
-    template Quaternion<T> from_matrix<T>(const Matrix3<T>& m); \
     template Matrix3<T>    rot_matrix<T>(const Quaternion<T> &q); \
     template Matrix4<T>    transform<T>(const Quaternion<T> &q); \
     template Quaternion<T> lerp<T>(const Quaternion<T> &q1, const Quaternion<T> &q2, T fact); \
     template Quaternion<T> slerp<T>(const Quaternion<T>& q1, const Quaternion<T>& q2, T r); \
 }
 
+#define VMATH_FUNCTIONS_FACTORIES(T) \
+namespace math { \
+namespace factory { \
+    template Matrix4<T> create_translation<T>(const Vector3<T>& v); \
+    template Matrix4<T> create_transformation<T>(const Vector3<T>& v, const Quaternion<T> &q); \
+    template Matrix4<T> create_lookat<T>(const Vector3<T>& eye, const Vector3<T>& to, const Vector3<T>& up=Vector3<T>(T(0),T(0),T(1))); \
+    template Quaternion<T> quat_from_euler_321<T>(T x, T y, T z); \
+    template Quaternion<T> quat_from_axis_angle<T>(Vector3<T> axis, T angle); \
+    template Quaternion<T> quat_from_matrix<T>(const Matrix4<T>& m); \
+    template Quaternion<T> quat_from_matrix<T>(const Matrix3<T>& m); \
+} \
+}
+
+VMATH_FUNCTIONS_VECTOR(uint8_t)
 VMATH_FUNCTIONS_VECTOR(int8_t)
 VMATH_FUNCTIONS_VECTOR(int32_t)
 VMATH_FUNCTIONS_VECTOR(int64_t)
@@ -115,3 +123,5 @@ VMATH_FUNCTIONS_MATRIX(double)
 VMATH_FUNCTIONS_QUATERNION(float)
 VMATH_FUNCTIONS_QUATERNION(double)
 
+VMATH_FUNCTIONS_FACTORIES(float)
+VMATH_FUNCTIONS_FACTORIES(double)

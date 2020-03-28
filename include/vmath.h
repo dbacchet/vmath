@@ -110,14 +110,6 @@ template <typename T> T det(const Matrix4<T> &m);
 template <typename T> Matrix4<T> inverse(const Matrix4<T> &m);
 /// transpose
 template <typename T> void transpose(Matrix4<T> &mat);
-/// create a translation matrix
-template <typename T> Matrix4<T> create_translation(const Vector3<T> &v);
-/// create a transformation matrix
-template <typename T> Matrix4<T> create_transformation(const Vector3<T> &v, const Quaternion<T> &q);
-/// create look-at matrix
-template <typename T>
-Matrix4<T> create_lookat(const Vector3<T> &eye, const Vector3<T> &to,
-                         const Vector3<T> &up = Vector3<T>(T(0), T(0), T(1)));
 /// linear interpolation
 template <typename T> Matrix4<T> lerp(const Matrix4<T> &m1, const Matrix4<T> &m2, T fact);
 
@@ -137,19 +129,6 @@ template <typename T> void normalize(Quaternion<T> &q);
 template <typename T> Vector3<T> axis(const Quaternion<T> &q);
 /// get rotation angle
 template <typename T> T angle(const Quaternion<T> &q);
-/// quaternion from eulers angles.
-/// @param x Rotation around x axis (in radians).
-/// @param y Rotation around y axis (in radians).
-/// @param z Rotation around z axis (in radians).
-template <typename T> Quaternion<T> from_euler_321(T x, T y, T z);
-/// quaternion given axis and angle
-/// @param axis Unit vector expressing axis of rotation.
-/// @param angle Angle of rotation around axis (in radians).
-template <typename T> Quaternion<T> from_axis_angle(Vector3<T> axis, float angle);
-/// quaternion from transformation matrix (only rotation part is kept)
-template <typename T> Quaternion<T> from_matrix(const Matrix4<T> &m);
-/// quaternion from rotation matrix.
-template <typename T> Quaternion<T> from_matrix(const Matrix3<T> &m);
 /// convert to rotation matrix.
 template <typename T> Matrix3<T> rot_matrix(const Quaternion<T> &q);
 /// Convert to transformation matrix.
@@ -160,7 +139,36 @@ template <typename T> Quaternion<T> lerp(const Quaternion<T> &q1, const Quaterni
 /// spherical interpolation between quaternions (q1, q2)
 template <typename T> Quaternion<T> slerp(const Quaternion<T> &q1, const Quaternion<T> &q2, T r);
 
+// ///////// //
+// factories //
+// ///////// //
 
+/// functions used to create vmath objects
+namespace factory {
+
+/// create a translation matrix
+template <typename T> Matrix4<T> create_translation(const Vector3<T> &v);
+/// create a transformation matrix
+template <typename T> Matrix4<T> create_transformation(const Vector3<T> &v, const Quaternion<T> &q);
+/// create look-at matrix
+template <typename T>
+Matrix4<T> create_lookat(const Vector3<T> &eye, const Vector3<T> &to,
+                         const Vector3<T> &up = Vector3<T>(T(0), T(0), T(1)));
+/// quaternion from eulers angles.
+/// @param x Rotation around x axis (in radians).
+/// @param y Rotation around y axis (in radians).
+/// @param z Rotation around z axis (in radians).
+template <typename T> Quaternion<T> quat_from_euler_321(T x, T y, T z);
+/// quaternion given axis and angle
+/// @param axis Unit vector expressing axis of rotation.
+/// @param angle Angle of rotation around axis (in radians).
+template <typename T> Quaternion<T> quat_from_axis_angle(Vector3<T> axis, T angle);
+/// quaternion from transformation matrix (only rotation part is kept)
+template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m);
+/// quaternion from rotation matrix.
+template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m);
+
+} // namespace factory
 } // namespace math
 
 #if not defined(VMATH_COMPILED_LIB)
