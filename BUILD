@@ -4,6 +4,7 @@ cc_library(
             'include/vmath_types.h',
             'include/vmath_types_impl.h',
             'include/vmath.h',
+            'include/vmath_impl.h',
            ],
     strip_include_prefix = 'include',
     linkstatic = True,
@@ -16,6 +17,7 @@ cc_library(
             'include/vmath_types.h',
             'include/vmath_types_impl.h',
             'include/vmath.h',
+            'include/vmath_impl.h',
            ],
     srcs = [
             'src/vmath_compiled_lib.cpp',
