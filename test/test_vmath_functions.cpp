@@ -194,3 +194,76 @@ TEST(Functions, matrix4) {
                                            0,0,0,0}));
 }
 
+TEST(Functions, quaternion) {
+    math::Quatd q1(6,3,4,5);
+    float l2 = q1.x*q1.x + q1.y*q1.y + q1.z*q1.z + q1.w*q1.w;
+    float l = std::sqrt(l2);
+    ASSERT_FLOAT_EQ(length(q1), l);
+    ASSERT_FLOAT_EQ(length2(q1), l2);
+    // normalization
+    math::Quatd q2 = normalized(q1);
+    ASSERT_FLOAT_EQ(q2.x, 3.0/l);
+    ASSERT_FLOAT_EQ(q2.y, 4.0/l);
+    ASSERT_FLOAT_EQ(q2.z, 5.0/l);
+    ASSERT_FLOAT_EQ(q2.w, 6.0/l);
+    normalize(q1);
+    ASSERT_FLOAT_EQ(q1.x, q2.x);
+    ASSERT_FLOAT_EQ(q1.y, q2.y);
+    ASSERT_FLOAT_EQ(q1.z, q2.z);
+    ASSERT_FLOAT_EQ(q1.w, q2.w);
+    // lerp
+    math::Quatd q3(4,1,2,3);
+    math::Quatd q4(8,2,4,6);
+    ASSERT_EQ(lerp(q3,q4,0.0), q3);
+    ASSERT_EQ(lerp(q3,q4,1.0), q4);
+    ASSERT_EQ(lerp(q3,q4,0.5), (q3+q4)/2.0);
+    // axis-angle operations
+    double angle = M_PI/4.0;
+    double ca2 = std::cos(angle/2);
+    double sa2 = std::sin(angle/2);
+    math::Vector3d axis(1,2,3);
+    math::Quatd q5(ca2, sa2, 2*sa2, 3*sa2);
+    ASSERT_DOUBLE_EQ(math::angle(q5), angle);
+    ASSERT_EQ(math::axis(q5), axis);
+    // malformed with zero rotation
+    math::Quatd q6(1,1,2,3); // <-- not a valid axis/angle quaternion, since the angle is 0
+    ASSERT_DOUBLE_EQ(math::angle(q6), 0.0);
+    ASSERT_EQ(math::axis(q6), axis);
+    // angle wrapping
+    double anglewrap = 2*M_PI + angle;
+    ca2 = std::cos(anglewrap/2);
+    sa2 = std::sin(anglewrap/2);
+    math::Quatd q7(ca2, sa2, 2*sa2, 3*sa2);
+    ASSERT_DOUBLE_EQ(math::angle(q7), 2*M_PI - angle);
+    ASSERT_EQ(math::axis(q7), -axis);
+    // values calculated using https://www.andre-gaschler.com/rotationconverter
+	math::Quatd r1(0.8775825618903728, 0.12813186485189226, 0.2562637297037845, 0.3843955945556768);
+    ASSERT_DOUBLE_EQ(math::angle(r1), 1.0);
+    ASSERT_EQ(math::axis(r1), math::Vector3d(0.2672612419124244, 0.5345224838248488, 0.8017837257372732));
+    ASSERT_EQ(math::rot_matrix(r1), math::Matrix3d({ 0.5731379, -0.6090066,  0.5482918,
+                                                     0.7403488,  0.6716445, -0.0278793,
+                                                    -0.3512785,  0.4219059,  0.8358222}));
+    ASSERT_EQ(math::transform(r1), math::Matrix4d({ 0.5731379, -0.6090066,  0.5482918, 0.0,
+                                                    0.7403488,  0.6716445, -0.0278793, 0.0,
+                                                   -0.3512785,  0.4219059,  0.8358222, 0.0,
+                                                   -0.0,        0.0,        0.0,       1.0}));
+    math::Quatd r2(-0.9899925, 0.0377159, 0.0754318, 0.1131477);
+    ASSERT_NEAR(math::angle(r2), 6.0, 1E-6);
+    ASSERT_EQ(math::axis(r2), math::Vector3d(0.2672612, 0.5345225, 0.8017837));
+    ASSERT_EQ(math::rot_matrix(r2), math::Matrix3d({ 0.9630153,  0.2297208, -0.1408189,
+                                                    -0.2183408,  0.9715502,  0.0917468,
+                                                     0.1578888, -0.0576071,  0.9857751}));
+    ASSERT_EQ(math::transform(r2), math::Matrix4d({ 0.9630153,  0.2297208, -0.1408189, 0.0,
+                                                   -0.2183408,  0.9715502,  0.0917468, 0.0,
+                                                    0.1578888, -0.0576071,  0.9857751, 0.0,
+                                                   -0.0,        0.0,        0.0,       1.0}));
+    // slerp
+	math::Quatd r3(0.8775826, 0.1281319, 0.2562637, 0.3843956); // axis{1,2,3}, angle 1
+    math::Quatd r4(0.5403023, 0.2248926, 0.4497852, 0.6746777); // axis{1,2,3}, angle 2
+    ASSERT_EQ(math::slerp(r3,r4,0.0), r3);
+    ASSERT_EQ(math::slerp(r3,r4,1.0), r4);
+    ASSERT_EQ(math::slerp(r3,r4,0.5), math::Quatd(0.7316889, 0.1821756, 0.3643512, 0.5465269)); // angle 1.5
+    math::Quatd r5(-0.8775826, 0.1281319, 0.2562637, 0.3843956); // axis{1,2,3}, angle 2PI-1
+    ASSERT_EQ(math::slerp(r3,r5,0.5), math::Quatd(1,0,0,0)); // angle 0
+}
+

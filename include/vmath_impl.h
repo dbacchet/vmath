@@ -294,9 +294,14 @@ template <typename T> inline void normalize(Quaternion<T> &q) {
     q.z /= len;
 }
 
+template <typename T> Quaternion<T> normalized(const Quaternion<T> &q) {
+    T s = length(q);
+    return Quaternion<T>(T(q.w/s), T(q.x/s), T(q.y/s), T(q.z/s));
+}
+
 template <typename T> inline Vector3<T> axis(const Quaternion<T> &q) {
-    if (fabs(q.w - 1) < VMATH_EPSILON)
-        return (Vector3<T>(1, 0, 0)); // arbitrary when there is no rotation!!
+    if (std::abs(q.w*q.w - 1) < VMATH_EPSILON)
+        return (Vector3<T>(q.x,q.y,q.z)); // arbitrary when there is no rotation!!
     Vector3<T> axis;
     axis.x = q.x / sqrt(1 - q.w * q.w);
     axis.y = q.y / sqrt(1 - q.w * q.w);

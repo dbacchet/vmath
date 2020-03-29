@@ -122,12 +122,14 @@ template <typename T> T length(const Quaternion<T> &q);
 /// square of length.
 template <typename T> T length2(const Quaternion<T> &q);
 /// get the normalized quaternion
-template <typename T> Quaternion<T> normalized(const Quaternion<T> &vec);
+template <typename T> Quaternion<T> normalized(const Quaternion<T> &q);
 /// normalize quaternion
 template <typename T> void normalize(Quaternion<T> &q);
-/// get the rotation axis
+/// get the rotation axis (a rotation quaternion is supposed to be normalized, but the function
+/// will return the axis also for non-normal quaternions, assuming that w=cos(angle/2), azis=q.[xyz]*sin(angle/2))
 template <typename T> Vector3<T> axis(const Quaternion<T> &q);
-/// get rotation angle
+/// get the rotation angle (a rotation quaternion is supposed to be normalized, but the function
+/// will return the angle also for non-normal quaternions, assuming that w=cos(angle/2))
 template <typename T> T angle(const Quaternion<T> &q);
 /// convert to rotation matrix.
 template <typename T> Matrix3<T> rot_matrix(const Quaternion<T> &q);

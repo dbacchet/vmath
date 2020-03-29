@@ -89,6 +89,7 @@ namespace math { \
     template T             length<T>(const Quaternion<T> &q); \
     template T             length2<T>(const Quaternion<T> &q); \
     template void          normalize<T>(Quaternion<T> &q); \
+    template Quaternion<T> normalized<T>(const Quaternion<T> &vec); \
     template Vector3<T>    axis<T>(const Quaternion<T> &q); \
     template T             angle<T>(const Quaternion<T> &q); \
     template Matrix3<T>    rot_matrix<T>(const Quaternion<T> &q); \
