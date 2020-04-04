@@ -7,13 +7,6 @@
 #include <numeric>
 
 namespace {
-struct DummyVec {
-    double x = 10.1;
-    double y = 11.1;
-    double z = 12.1;
-    double w = 13.1;
-};
-
 template <typename T>
 void print_matrix(const math::Matrix4<T> &m) {
     for (int i=0; i<4; i++) {
@@ -265,5 +258,8 @@ TEST(Functions, quaternion) {
     ASSERT_EQ(math::slerp(r3,r4,0.5), math::Quatd(0.7316889, 0.1821756, 0.3643512, 0.5465269)); // angle 1.5
     math::Quatd r5(-0.8775826, 0.1281319, 0.2562637, 0.3843956); // axis{1,2,3}, angle 2PI-1
     ASSERT_EQ(math::slerp(r3,r5,0.5), math::Quatd(1,0,0,0)); // angle 0
+    // for very small differences the function applies just lerp
+    math::Quatd r6(0.8775586, 0.1281436, 0.2562872, 0.3844308); // axis{1,2,3}, angle 1.0001
+    ASSERT_EQ(math::slerp(r3,r6,0.5), math::lerp(r3,r6,0.5));
 }
 

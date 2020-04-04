@@ -118,7 +118,7 @@ template <typename T> inline void Vector2<T>::operator/=(T rhs) {
 }
 
 template <typename T> inline bool Vector2<T>::operator==(const Vector2<T> &rhs) const {
-    return (fabs(x - rhs.x) < VMATH_EPSILON) && (fabs(y - rhs.y) < VMATH_EPSILON);
+    return (std::abs(x - rhs.x) < VMATH_EPSILON) && (std::abs(y - rhs.y) < VMATH_EPSILON);
 }
 
 template <typename T> inline bool Vector2<T>::operator!=(const Vector2<T> &rhs) const {
@@ -230,7 +230,7 @@ template <typename T> inline void Vector3<T>::operator/=(T rhs) {
 }
 
 template <typename T> inline bool Vector3<T>::operator==(const Vector3<T> &rhs) const {
-    return fabs(x - rhs.x) < VMATH_EPSILON && fabs(y - rhs.y) < VMATH_EPSILON && fabs(z - rhs.z) < VMATH_EPSILON;
+    return std::abs(x - rhs.x) < VMATH_EPSILON && std::abs(y - rhs.y) < VMATH_EPSILON && std::abs(z - rhs.z) < VMATH_EPSILON;
 }
 
 template <typename T> inline bool Vector3<T>::operator!=(const Vector3<T> &rhs) const {
@@ -324,8 +324,8 @@ template <typename T> inline T Vector4<T>::dot(const Vector4<T> &rhs) const {
 
 
 template <typename T> inline bool Vector4<T>::operator==(const Vector4<T> &rhs) const {
-    return fabs(x - rhs.x) < VMATH_EPSILON && fabs(y - rhs.y) < VMATH_EPSILON && fabs(z - rhs.z) < VMATH_EPSILON &&
-           fabs(w - rhs.w) < VMATH_EPSILON;
+    return std::abs(x - rhs.x) < VMATH_EPSILON && std::abs(y - rhs.y) < VMATH_EPSILON && std::abs(z - rhs.z) < VMATH_EPSILON &&
+           std::abs(w - rhs.w) < VMATH_EPSILON;
 }
 
 template <typename T> inline bool Vector4<T>::operator!=(const Vector4<T> &rhs) const {
@@ -393,7 +393,7 @@ template <typename T> inline Matrix3<T>::Matrix3(std::initializer_list<T> init) 
 
 template <typename T> inline bool Matrix3<T>::operator==(const Matrix3<T> &rhs) const {
     for (int i = 0; i < 9; i++)
-        if (fabs(data[i] - rhs.data[i]) >= VMATH_EPSILON)
+        if (std::abs(data[i] - rhs.data[i]) >= VMATH_EPSILON)
             return false;
     return true;
 }
@@ -482,7 +482,7 @@ template <typename T> inline Matrix4<T>::Matrix4(const Matrix4<T> &src) {
 
 template <typename T> inline bool Matrix4<T>::operator==(const Matrix4<T> &rhs) const {
     for (int i = 0; i < 16; i++) {
-        if (fabs(data[i] - rhs.data[i]) >= VMATH_EPSILON)
+        if (std::abs(data[i] - rhs.data[i]) >= VMATH_EPSILON)
             return false;
     }
     return true;
@@ -597,10 +597,10 @@ template <typename T> inline void Quaternion<T>::operator*=(T rhs) {
 
 template <typename T> inline bool Quaternion<T>::operator==(const Quaternion<T> &rhs) const {
     const Quaternion<T> &lhs = *this;
-    return (fabs(lhs.w - rhs.w) < VMATH_EPSILON) 
-        && (fabs(lhs.x - rhs.x) < VMATH_EPSILON)
-        && (fabs(lhs.y - rhs.y) < VMATH_EPSILON)
-        && (fabs(lhs.z - rhs.z) < VMATH_EPSILON);
+    return (std::abs(lhs.w - rhs.w) < VMATH_EPSILON) 
+        && (std::abs(lhs.x - rhs.x) < VMATH_EPSILON)
+        && (std::abs(lhs.y - rhs.y) < VMATH_EPSILON)
+        && (std::abs(lhs.z - rhs.z) < VMATH_EPSILON);
 }
 
 template <typename T> inline bool Quaternion<T>::operator!=(const Quaternion<T> &rhs) const {

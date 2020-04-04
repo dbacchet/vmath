@@ -101,13 +101,16 @@ namespace math { \
 #define VMATH_FUNCTIONS_FACTORIES(T) \
 namespace math { \
 namespace factory { \
-    template Matrix4<T> create_translation<T>(const Vector3<T>& v); \
-    template Matrix4<T> create_transformation<T>(const Vector3<T>& v, const Quaternion<T> &q); \
-    template Matrix4<T> create_lookat<T>(const Vector3<T>& eye, const Vector3<T>& to, const Vector3<T>& up=Vector3<T>(T(0),T(0),T(1))); \
+    template Matrix3<T>    matrix3_identity<T>(); \
+    template Matrix4<T>    matrix4_identity<T>(); \
+    template Matrix4<T>    create_translation<T>(const Vector3<T>& v); \
+    template Matrix4<T>    create_transformation<T>(const Vector3<T>& v, const Quaternion<T> &q); \
+    template Matrix4<T>    create_lookat<T>(const Vector3<T>& eye, const Vector3<T>& to, const Vector3<T>& up=Vector3<T>(T(0),T(0),T(1))); \
     template Quaternion<T> quat_from_euler_321<T>(T x, T y, T z); \
     template Quaternion<T> quat_from_axis_angle<T>(Vector3<T> axis, T angle); \
     template Quaternion<T> quat_from_matrix<T>(const Matrix4<T>& m); \
     template Quaternion<T> quat_from_matrix<T>(const Matrix3<T>& m); \
+    template Vector3<T>    to_euler_321(Quaternion<T> const &q); \
 } \
 }
 

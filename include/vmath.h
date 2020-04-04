@@ -138,7 +138,7 @@ template <typename T> Matrix3<T> rot_matrix(const Quaternion<T> &q);
 template <typename T> Matrix4<T> transform(const Quaternion<T> &q);
 /// linear interpolation
 template <typename T> Quaternion<T> lerp(const Quaternion<T> &q1, const Quaternion<T> &q2, T fact);
-/// spherical interpolation between quaternions (q1, q2)
+/// spherical interpolation between quaternions (q1, q2). The input quaternions are assumed to be normalized
 template <typename T> Quaternion<T> slerp(const Quaternion<T> &q1, const Quaternion<T> &q2, T r);
 
 // ///////// //
@@ -160,13 +160,16 @@ template <typename T> Matrix4<T> create_transformation(const Vector3<T> &v, cons
 template <typename T>
 Matrix4<T> create_lookat(const Vector3<T> &eye, const Vector3<T> &to,
                          const Vector3<T> &up = Vector3<T>(T(0), T(0), T(1)));
-/// quaternion from eulers angles.
-/// @param x Rotation around x axis (in radians).
-/// @param y Rotation around y axis (in radians).
-/// @param z Rotation around z axis (in radians).
+/// quaternion from eulers angles. The order is Body321, i.e. first yaw (z) then pitch (y) then roll (x)
+/// @param x Rotation around x axis (roll, in radians).
+/// @param y Rotation around y axis (pitch, in radians).
+/// @param z Rotation around z axis (yaw, in radians).
 template <typename T> Quaternion<T> quat_from_euler_321(T x, T y, T z);
+/// quaternion to eulers angles. The order is Body321, i.e. first yaw (z) then pitch (y) then roll (x)
+/// @return vector with angles around x (roll), y (pitch), z(yaw) in radians.
+template <typename T> Vector3<T> to_euler_321(Quaternion<T> const &q);
 /// quaternion given axis and angle
-/// @param axis Unit vector expressing axis of rotation.
+/// @param axis Unit vector expressing axis of rotation. Note: the axis is NOT normalized internally!
 /// @param angle Angle of rotation around axis (in radians).
 template <typename T> Quaternion<T> quat_from_axis_angle(Vector3<T> axis, T angle);
 /// quaternion from transformation matrix (only rotation part is kept)

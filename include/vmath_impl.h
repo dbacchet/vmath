@@ -27,6 +27,7 @@
 #include <cmath>
 #include <cassert>
 #include <cstring>
+#include <cstdio>
 
 namespace math {
 
@@ -374,24 +375,26 @@ template <typename T> inline Quaternion<T> lerp(const Quaternion<T> &q1, const Q
 }
 
 template <typename T> inline Quaternion<T> slerp(const Quaternion<T> &q1, const Quaternion<T> &q2, T r) {
-    T costheta = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
-    // adjust signs (if necessary)
+    // this formula has been adapted from here: https://en.wikipedia.org/wiki/Slerp
+    T dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w; // this is a regular dot product, and assumes that the 2 quaternions are normalized
+    // adjust signs (if necessary) to always take the shortest path
     Quaternion<T> end = q2;
-    if (costheta < static_cast<T>(0.0)) {
-        costheta = -costheta;
-        end = -end; // Reverse all signs
+    if (dot < static_cast<T>(0.0)) {
+        dot = -dot;
+        end = -end;
     }
 
     // Calculate coefficients
     T sclp, sclq;
-    if ((static_cast<T>(1.0) - costheta) > static_cast<T>(0.0001)) // some tolerance
-    {
+    if ((static_cast<T>(1.0) - dot) > static_cast<T>(0.0001)) {// some tolerance
         // Standard case (slerp)
-        T theta, sintheta;
-        theta = acos(costheta); // extract theta from dot product's cos theta
-        sintheta = sin(theta);
-        sclp = sin((static_cast<T>(1.0) - r) * theta) / sintheta;
-        sclq = sin(r * theta) / sintheta;
+        T theta0 = acos(dot); // extract theta0 from dot product's cos theta0; safe because dot is in range (0..+1)
+        T sintheta0 = sin(theta0);
+        T theta = theta0 * r;
+        T sintheta = sin(theta);
+        T costheta = cos(theta);
+        sclp = costheta - dot * sintheta / sintheta0;  // == sin(theta_0 - theta) / sin(theta_0)
+        sclq = sintheta / sintheta0;
     } else {
         // Very close, do linear interp (because it's faster)
         sclp = static_cast<T>(1.0) - r;
@@ -423,7 +426,7 @@ template <typename T> Matrix3<T> matrix3_identity() {
 
 // create an identity matrix
 template <typename T> Matrix4<T> matrix4_identity() {
-    Matrix3<T> m;
+    Matrix4<T> m;
     for (int i = 0; i < 16; i++)
         m.data[i] = (i % 5) ? T(0) : T(1);
     return m;
@@ -431,7 +434,7 @@ template <typename T> Matrix4<T> matrix4_identity() {
 
 /// create a translation matrix
 template <typename T> Matrix4<T> create_translation(const Vector3<T> &v) {
-    Matrix4<T> ret;
+    Matrix4<T> ret = matrix4_identity<T>();
     set_translation(ret, v);
     return ret;
 }
@@ -452,23 +455,58 @@ template <typename T> Matrix4<T> create_lookat(const Vector3<T> &eye, const Vect
     Vector3<T> y = z.cross(x);
 
     Matrix4<T> m = create_translation(eye);
-    m(1, 1) = x.x;
-    m(1, 2) = y.x;
-    m(1, 3) = z.x;
-    m(2, 1) = x.y;
-    m(2, 2) = y.y;
-    m(2, 3) = z.y;
-    m(3, 1) = x.z;
-    m(3, 2) = y.z;
-    m(3, 3) = z.z;
+    m(0, 0) = x.x;
+    m(0, 1) = y.x;
+    m(0, 2) = z.x;
+    m(1, 0) = x.y;
+    m(1, 1) = y.y;
+    m(1, 2) = z.y;
+    m(2, 0) = x.z;
+    m(2, 1) = y.z;
+    m(2, 2) = z.z;
 
     return m;
 }
 
 template <typename T> inline Quaternion<T> quat_from_euler_321(T x, T y, T z) {
-    Quaternion<T> ret = quat_from_axis_angle(Vector3<T>(1, 0, 0), x) * quat_from_axis_angle(Vector3<T>(0, 1, 0), y) *
-                        quat_from_axis_angle(Vector3<T>(0, 0, 1), z);
-    return ret;
+    // from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Euler_Angles_to_Quaternion_Conversion
+    const T yaw = z;
+    const T pitch = y;
+    const T roll = x;
+    const T cy = std::cos(yaw * 0.5);
+    const T sy = std::sin(yaw * 0.5);
+    const T cp = std::cos(pitch * 0.5);
+    const T sp = std::sin(pitch * 0.5);
+    const T cr = std::cos(roll * 0.5);
+    const T sr = std::sin(roll * 0.5);
+
+    Quaternion<T> q(cy * cp * cr + sy * sp * sr,
+                    cy * cp * sr - sy * sp * cr,
+                    sy * cp * sr + cy * sp * cr,
+                    sy * cp * cr - cy * sp * sr);
+
+    return q;
+}
+
+template <typename T> Vector3<T> to_euler_321(Quaternion<T> const &q) {
+    // from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_Angles_Conversion
+    Vector3<T> angles;
+    // roll (x-axis rotation)
+    T sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    T cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    angles.x = std::atan2(sinr_cosp, cosr_cosp);
+    // pitch (y-axis rotation)
+    T sinp = 2 * (q.w * q.y - q.z * q.x);
+    if (std::abs(sinp) >= 1) {
+        angles.y = std::copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+    } else {
+        angles.y = std::asin(sinp);
+    }
+    // yaw (z-axis rotation)
+    T siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    T cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    angles.z = std::atan2(siny_cosp, cosy_cosp);
+    return angles;
 }
 
 template <typename T> inline Quaternion<T> quat_from_axis_angle(Vector3<T> axis, T angle) {
@@ -478,41 +516,48 @@ template <typename T> inline Quaternion<T> quat_from_axis_angle(Vector3<T> axis,
 }
 
 template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m) {
+    // implement the algorithm described here: https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
+    // only the rotation part is considered
     Quaternion<T> q;
 
-    T tr, s;
-    tr = m(1, 1) + m(2, 2) + m(3, 3);
-    if (tr >= VMATH_EPSILON) {
-        s = (T)(0.5 / sqrt(tr + 1.0));
-        q.w = (T)(0.25 / s);
-        q.x = (m(3, 2) - m(2, 3)) * s;
-        q.y = (m(1, 3) - m(3, 1)) * s;
-        q.z = (m(2, 1) - m(1, 2)) * s;
+    T tr = m(0, 0) + m(1, 1) + m(2, 2);
+    if (tr >= T(0)) {
+        T r = std::sqrt(T(1) + tr);
+        T s = T(1)/(T(2)*r);
+        q.w = r/T(2);
+        q.x = (m(2, 1) - m(1, 2)) * s;
+        q.y = (m(0, 2) - m(2, 0)) * s;
+        q.z = (m(1, 0) - m(0, 1)) * s;
     } else {
-        T d0 = m(1, 1);
-        T d1 = m(2, 2);
-        T d2 = m(3, 3);
+        // when the trace is negative use the axis with the biggest magnitude
+        T d0 = m(0, 0);
+        T d1 = m(1, 1);
+        T d2 = m(2, 2);
 
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
+        printf("bigidx %d\n",bigIdx);
 
         if (bigIdx == 0) {
-            s = (T)(2.0 * sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3)));
-            q.w = (m(3, 2) - m(2, 3)) / s;
-            q.x = (T)(0.25 * s);
-            q.y = (m(1, 2) + m(2, 1)) / s;
-            q.z = (m(1, 3) + m(3, 1)) / s;
+            T r = std::sqrt(1.0 + m(0, 0) - m(1, 1) - m(2, 2));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(2, 1) - m(1, 2)) * s;
+            q.x = r/T(2);
+            q.y = (m(0, 1) + m(1, 0)) * s;
+            q.z = (m(0, 2) + m(2, 0)) * s;
         } else if (bigIdx == 1) {
-            s = (T)(2.0 * sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3)));
-            q.w = (m(1, 3) - m(3, 1)) / s;
-            q.x = (m(1, 2) + m(2, 1)) / s;
-            q.y = (T)(0.25 * s);
-            q.z = (m(2, 3) + m(3, 2)) / s;
+            T r = std::sqrt(1.0 + m(1, 1) - m(0, 0) - m(2, 2));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(0, 2) - m(2, 0)) * s;
+            q.x = (m(0, 1) + m(1, 0)) * s;
+            q.y = r/T(2);
+            q.z = (m(1, 2) + m(2, 1)) * s;
         } else {
-            s = (T)(2.0 * sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2)));
-            q.w = (m(2, 1) - m(1, 2)) / s;
-            q.x = (m(1, 3) + m(3, 1)) / s;
-            q.y = (m(2, 3) + m(3, 2)) / s;
-            q.z = (T)(0.25 * s);
+            T r = std::sqrt(1.0 + m(2, 2) - m(0, 0) - m(1, 1));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(1, 0) - m(0, 1)) * s;
+            q.x = (m(0, 2) + m(2, 0)) * s;
+            q.y = (m(1, 2) + m(2, 1)) * s;
+            q.z = r/T(2);
         }
     }
 
@@ -520,43 +565,50 @@ template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m) {
 }
 
 template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m) {
+    // implement the algorithm described here: https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
     Quaternion<T> q;
 
-    T tr, s;
-    tr = m(1, 1) + m(2, 2) + m(3, 3);
-    if (tr >= VMATH_EPSILON) {
-        s = T(0.5) / (T)sqrt(tr + 1.0);
-        q.w = T(0.25) / s;
-        q.x = (m(3, 2) - m(2, 3)) * s;
-        q.y = (m(1, 3) - m(3, 1)) * s;
-        q.z = (m(2, 1) - m(1, 2)) * s;
+    T tr = m(0, 0) + m(1, 1) + m(2, 2);
+    if (tr >= T(0)) {
+        T r = std::sqrt(T(1) + tr);
+        T s = T(1)/(T(2)*r);
+        q.w = r/T(2);
+        q.x = (m(2, 1) - m(1, 2)) * s;
+        q.y = (m(0, 2) - m(2, 0)) * s;
+        q.z = (m(1, 0) - m(0, 1)) * s;
     } else {
-        T d0 = m(1, 1);
-        T d1 = m(2, 2);
-        T d2 = m(3, 3);
+        // when the trace is negative use the axis with the biggest magnitude
+        T d0 = m(0, 0);
+        T d1 = m(1, 1);
+        T d2 = m(2, 2);
 
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
+        printf("bigidx %d\n",bigIdx);
 
         if (bigIdx == 0) {
-            s = T(2.0) * (T)sqrt(1.0 + m(1, 1) - m(2, 2) - m(3, 3));
-            q.w = (m(3, 2) - m(2, 3)) / s;
-            q.x = T(0.25) * s;
-            q.y = (m(1, 2) + m(2, 1)) / s;
-            q.z = (m(1, 3) + m(3, 1)) / s;
+            T r = std::sqrt(1.0 + m(0, 0) - m(1, 1) - m(2, 2));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(2, 1) - m(1, 2)) * s;
+            q.x = r/T(2);
+            q.y = (m(0, 1) + m(1, 0)) * s;
+            q.z = (m(0, 2) + m(2, 0)) * s;
         } else if (bigIdx == 1) {
-            s = T(2.0) * (T)sqrt(1.0 + m(2, 2) - m(1, 1) - m(3, 3));
-            q.w = (m(1, 3) - m(3, 1)) / s;
-            q.x = (m(1, 2) + m(2, 1)) / s;
-            q.y = T(0.25) * s;
-            q.z = (m(2, 3) + m(3, 2)) / s;
+            T r = std::sqrt(1.0 + m(1, 1) - m(0, 0) - m(2, 2));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(0, 2) - m(2, 0)) * s;
+            q.x = (m(0, 1) + m(1, 0)) * s;
+            q.y = r/T(2);
+            q.z = (m(1, 2) + m(2, 1)) * s;
         } else {
-            s = T(2.0) * (T)sqrt(1.0 + m(3, 3) - m(1, 1) - m(2, 2));
-            q.w = (m(2, 1) - m(1, 2)) / s;
-            q.x = (m(1, 3) + m(3, 1)) / s;
-            q.y = (m(2, 3) + m(3, 2)) / s;
-            q.z = T(0.25) * s;
+            T r = std::sqrt(1.0 + m(2, 2) - m(0, 0) - m(1, 1));
+            T s = T(1)/(T(2)*r);
+            q.w = (m(1, 0) - m(0, 1)) * s;
+            q.x = (m(0, 2) + m(2, 0)) * s;
+            q.y = (m(1, 2) + m(2, 1)) * s;
+            q.z = r/T(2);
         }
     }
+
     return q;
 }
 
