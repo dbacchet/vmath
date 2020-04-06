@@ -2,7 +2,7 @@
 Minimalistic math library with 2/3/4-dimensional vectors, matrices and quaternions
 
 [![Build Status](https://github.com/dbacchet/vmath/workflows/build/badge.svg)](https://github.com/dbacchet/vmath/actions?query=workflow%3Abuild+branch%3Amaster)
-[![Coverage Status](https://coveralls.io/repos/github/dbacchet/vmath/badge.svg?branch=master)](https://coveralls.io/github/dbacchet/vmath?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dbacchet/vmath/badge.svg?branch=master&service=github)](https://coveralls.io/github/dbacchet/vmath?branch=master)
 
 This is the rewrite of a library that I used for several years in both personal and professional projects. It's should be 
 quite stable, but if you find a bug or want to contribute bugfixes and improvements, please open an issue or a pull request!
