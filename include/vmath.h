@@ -145,9 +145,6 @@ template <typename T> Quaternion<T> slerp(const Quaternion<T> &q1, const Quatern
 // factories //
 // ///////// //
 
-/// functions used to create vmath objects
-namespace factory {
-
 /// create identity matrix
 template <typename T> Matrix3<T> matrix3_identity();
 /// create identity matrix
@@ -177,7 +174,6 @@ template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m);
 /// quaternion from rotation matrix.
 template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m);
 
-} // namespace factory
 } // namespace math
 
 #if not defined(VMATH_COMPILED_LIB)

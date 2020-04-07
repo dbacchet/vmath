@@ -414,7 +414,6 @@ template <typename T> inline Quaternion<T> slerp(const Quaternion<T> &q1, const 
 // factories //
 // ///////// //
 
-namespace factory {
 
 // create an identity matrix
 template <typename T> Matrix3<T> matrix3_identity() {
@@ -611,7 +610,5 @@ template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m) {
 
     return q;
 }
-
-} // namespace factory
 
 } // namespace math

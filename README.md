@@ -25,7 +25,6 @@ for the list of the typedefs that are currently defined.
 
 ```c++
 using namespace math;
-using namespace math::factory;
 (...)
 
 Matrix4f transform = create_transformation(Vector3f(10,1,0),                               // translation
@@ -77,8 +76,8 @@ snippet in your `WORKSPACE` file:
 git_repository(
     name = "vmath",
     remote = "https://github.com/dbacchet/vmath.git",
-    commit = "d47ecd3febbea1f81ae00c39aff0915883dd2080", # replace this with the sha of the commit you want to use
-    shallow_since = "1586049986 -0700"
+    commit = "ac4c326af0cf9c211d3feb92b99f909473eedcc8", # replace this with the sha of the commit you want to use
+    shallow_since = "1586239353 -0700"
 )
 ```
 For an example of a toy project that uses `vmath` (and is built with bazel), you can have a look at the

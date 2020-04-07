@@ -100,7 +100,6 @@ namespace math { \
 
 #define VMATH_FUNCTIONS_FACTORIES(T) \
 namespace math { \
-namespace factory { \
     template Matrix3<T>    matrix3_identity<T>(); \
     template Matrix4<T>    matrix4_identity<T>(); \
     template Matrix4<T>    create_translation<T>(const Vector3<T>& v); \
@@ -111,7 +110,6 @@ namespace factory { \
     template Quaternion<T> quat_from_matrix<T>(const Matrix4<T>& m); \
     template Quaternion<T> quat_from_matrix<T>(const Matrix3<T>& m); \
     template Vector3<T>    to_euler_321(Quaternion<T> const &q); \
-} \
 }
 
 VMATH_FUNCTIONS_VECTOR(uint8_t)
