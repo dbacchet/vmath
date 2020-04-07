@@ -39,30 +39,26 @@ namespace math {
 /// fields can be addressed with math names (x,y) or texture-lookup names (s,t)
 template <typename T> struct Vector2 {
     union {
-        T x;
+        T x = T(0);
         T s;
     };
     union {
-        T y;
+        T y = T(0);
         T t;
     };
 
     // constructors
-    Vector2();
-    Vector2(T _x, T _y);
-    Vector2(const Vector2<T> &src);
+    Vector2()
+    : x(0), y(0) {}
+    constexpr Vector2(T _x, T _y)
+    : x(_x), y(_y) {}
+    constexpr Vector2(const Vector2<T> &src)
+    : x(src.x), y(src.y) {}
     template <typename fromT>
-    Vector2(const fromT &src)
-    : x(static_cast<T>(src.x))
-    , y(static_cast<T>(src.y)) {}
-
-    // assignment operators
+    constexpr Vector2(const Vector2<fromT>& src)
+    : x(static_cast<T>(src.x)), y(static_cast<T>(src.y))  {}
+    // assignment operator
     Vector2<T> &operator=(const Vector2<T> &rhs);
-    template <typename fromT> Vector2<T> &operator=(const fromT &rhs) {
-        x = static_cast<T>(rhs.x);
-        y = static_cast<T>(rhs.y);
-        return *this;
-    }
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -103,38 +99,33 @@ template <typename T> Vector2<T> operator/(const Vector2<T> &v, T s);
 /// 3D vector
 template <typename T> struct Vector3 {
     union {
-        T x;
+        T x = T(0);
         T s;
         T r;
     };
     union {
-        T y;
+        T y = T(0);
         T t;
         T g;
     };
     union {
-        T z;
+        T z = T(0);
         T u;
         T b;
     };
 
     // constructors
-    Vector3();
-    Vector3(T nx, T ny, T nz);
-    Vector3(const Vector3<T> &src);
+    Vector3()
+    : x(0), y(0), z(0) {}
+    constexpr Vector3(T nx, T ny, T nz)
+    : x(nx), y(ny), z(nz) {}
+    constexpr Vector3(const Vector3<T> &src)
+    : x(src.x), y(src.y), z(src.z) {}
     template <typename fromT>
-    Vector3(const fromT &src)
-    : x(static_cast<T>(src.x))
-    , y(static_cast<T>(src.y))
-    , z(static_cast<T>(src.z)) {}
+    constexpr Vector3(const Vector3<fromT>& src)
+    : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z))  {}
     // assignment operators
     Vector3<T> &operator=(const Vector3<T> &rhs);
-    template <typename fromT> Vector3<T> &operator=(const fromT &rhs) {
-        x = static_cast<T>(rhs.x);
-        y = static_cast<T>(rhs.y);
-        z = static_cast<T>(rhs.z);
-        return *this;
-    }
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -176,40 +167,33 @@ template <typename T> Vector3<T> operator/(const Vector3<T> &v, T s);
 /// 4D vector
 template <typename T> struct Vector4 {
     union {
+        T x = T(0);
         T r;
-        T x;
     };
     union {
+        T y = T(0);
         T g;
-        T y;
     };
     union {
+        T z = T(0);
         T b;
-        T z;
     };
     union {
+        T w = T(0);
         T a;
-        T w;
     };
 
-    Vector4();
-    Vector4(T nx, T ny, T nz, T nw);
-    Vector4(const Vector4<T> &src);
+    Vector4()
+    : x(0), y(0), z(0), w(0) {}
+    constexpr Vector4(T nx, T ny, T nz, T nw)
+    : x(nx), y(ny), z(nz), w(nw) {}
+    constexpr Vector4(const Vector4<T> &src)
+    : x(src.x), y(src.y), z(src.z), w(src.w) {}
     template <typename fromT>
-    Vector4(const fromT &src)
-    : x(static_cast<T>(src.x))
-    , y(static_cast<T>(src.y))
-    , z(static_cast<T>(src.z))
-    , w(static_cast<T>(src.w)) {}
+    constexpr Vector4(const Vector4<fromT>& src)
+    : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) , w(static_cast<T>(src.w)) {}
     // assignment operators
     Vector4<T> &operator=(const Vector4<T> &rhs);
-    template <typename fromT> Vector4<T> &operator=(const fromT &rhs) {
-        x = static_cast<T>(rhs.x);
-        y = static_cast<T>(rhs.y);
-        z = static_cast<T>(rhs.z);
-        w = static_cast<T>(rhs.w);
-        return *this;
-    }
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -255,7 +239,8 @@ template <typename T> struct Matrix3 {
     // constructors
     Matrix3();
     Matrix3(const Matrix3<T> &src);
-    template <typename fromT> Matrix3(const Matrix3<fromT> &src) {
+    template <typename fromT>
+    Matrix3(const Matrix3<fromT> &src) {
         for (int i = 0; i < 9; i++)
             data[i] = static_cast<T>(src.data[i]);
     }
@@ -319,7 +304,8 @@ template <typename T> struct Matrix4 {
 
     Matrix4();
     Matrix4(const Matrix4<T> &src);
-    template <typename fromT> Matrix4(const Matrix4<fromT> &src) {
+    template <typename fromT>
+    Matrix4(const Matrix4<fromT> &src) {
         for (int i = 0; i < 16; i++)
             data[i] = static_cast<T>(src.data[i]);
     }
@@ -379,20 +365,20 @@ template <typename T> Vector3<T> operator*(const Matrix4<T> &m1, const Vector3<T
 
 /// Quaternion
 template <typename T> struct Quaternion {
-    T w; ///< real part
-    T x; ///< imaginary x component
-    T y; ///< imaginary y component
-    T z; ///< imaginary z component
+    T w = T(0); ///< real part
+    T x = T(0); ///< imaginary x component
+    T y = T(0); ///< imaginary y component
+    T z = T(0); ///< imaginary z component
 
-    Quaternion();
-    Quaternion(const Quaternion<T> &q);
-    template <typename fromT>
-    Quaternion(const fromT &q)
-    : w(static_cast<T>(q.w)), x(static_cast<T>(q.x)) 
-    , y(static_cast<T>(q.y)), z(static_cast<T>(q.z)) {}
-
-    Quaternion(T w_, T x_, T y_, T z_)
+    Quaternion()
+    : w(1), x(0), y(0), z(0) {}
+    constexpr Quaternion(T w_, T x_, T y_, T z_)
     : w(w_), x(x_), y(y_), z(z_) {}
+    constexpr Quaternion(const Quaternion<T> &q)
+    : w(q.w), x(q.x), y(q.y), z(q.z) {}
+    template <typename fromT>
+    constexpr Quaternion(const Quaternion<fromT>& src)
+    : w(static_cast<T>(src.w)), x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) {}
     // assignment
     Quaternion<T> &operator=(const Quaternion<T> &rhs);
     template <typename fromT> Quaternion<T> &operator=(const fromT &rhs) {

@@ -39,21 +39,7 @@ namespace math {
 // Vector2<T> implementation
 
 template <typename T>
-inline Vector2<T>::Vector2()
-: x(0)
-, y(0) {}
-
-template <typename T>
-inline Vector2<T>::Vector2(T _x, T _y)
-: x(_x)
-, y(_y) {}
-
-template <typename T>
-inline Vector2<T>::Vector2(const Vector2<T> &src)
-: x(src.x)
-, y(src.y) {}
-
-template <typename T> inline Vector2<T> &Vector2<T>::operator=(const Vector2<T> &rhs) {
+inline Vector2<T> &Vector2<T>::operator=(const Vector2<T> &rhs) {
     x = rhs.x;
     y = rhs.y;
     return *this;
@@ -132,25 +118,8 @@ template <typename T> inline Vector2<T> Vector2<T>::operator-() const {
 
 // Vector3<T> implementation //
 
-template <typename T>
-inline Vector3<T>::Vector3()
-: x(0)
-, y(0)
-, z(0) {}
-
-template <typename T>
-inline Vector3<T>::Vector3(T nx, T ny, T nz)
-: x(nx)
-, y(ny)
-, z(nz) {}
-
-template <typename T>
-inline Vector3<T>::Vector3(const Vector3<T> &src)
-: x(src.x)
-, y(src.y)
-, z(src.z) {}
-
-template <typename T> inline Vector3<T> &Vector3<T>::operator=(const Vector3<T> &rhs) {
+template <typename T> 
+inline Vector3<T> &Vector3<T>::operator=(const Vector3<T> &rhs) {
     x = rhs.x;
     y = rhs.y;
     z = rhs.z;
@@ -244,27 +213,7 @@ template <typename T> inline Vector3<T> Vector3<T>::operator-() const {
 // Vector4<T> implementation
 
 template <typename T>
-inline Vector4<T>::Vector4()
-: x(0)
-, y(0)
-, z(0)
-, w(0) {}
-
-template <typename T>
-inline Vector4<T>::Vector4(T nx, T ny, T nz, T nw)
-: x(nx)
-, y(ny)
-, z(nz)
-, w(nw) {}
-
-template <typename T>
-inline Vector4<T>::Vector4(const Vector4<T> &src)
-: x(src.x)
-, y(src.y)
-, z(src.z)
-, w(src.w) {}
-
-template <typename T> inline Vector4<T> &Vector4<T>::operator=(const Vector4<T> &rhs) {
+inline Vector4<T> &Vector4<T>::operator=(const Vector4<T> &rhs) {
     x = rhs.x;
     y = rhs.y;
     z = rhs.z;
@@ -544,15 +493,8 @@ template <typename T> inline void Matrix4<T>::operator/=(T rhs) {
 
 // Quaternion<T> implementation
 
-template <typename T>
-inline Quaternion<T>::Quaternion()
-: w(1), x(0), y(0), z(0) {}
-
-template <typename T>
-inline Quaternion<T>::Quaternion(const Quaternion<T> &q)
-: w(q.w), x(q.x), y(q.y), z(q.z) {}
-
-template <typename T> inline Quaternion<T> &Quaternion<T>::operator=(const Quaternion<T> &rhs) {
+template <typename T> 
+inline Quaternion<T> &Quaternion<T>::operator=(const Quaternion<T> &rhs) {
     w = rhs.w;
     x = rhs.x;
     y = rhs.y;

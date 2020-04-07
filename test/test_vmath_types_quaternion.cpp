@@ -6,15 +6,6 @@
 #include <vector>
 #include <numeric>
 
-namespace {
-struct DummyVec {
-    double s = 9.1;
-    double x = 10.1;
-    double y = 11.1;
-    double z = 12.1;
-    double w = 13.1;
-};
-} // namespace
 
 // ////////// //
 // Quaternion //
@@ -46,11 +37,11 @@ TEST(Quaternion, constructors) {
     ASSERT_DOUBLE_EQ(q4.x, 2.0);
     ASSERT_DOUBLE_EQ(q4.y, 3.0);
     ASSERT_DOUBLE_EQ(q4.z, 4.0);
-    math::Quatd q5(DummyVec{});
-    ASSERT_DOUBLE_EQ(q5.w, 13.1);
-    ASSERT_DOUBLE_EQ(q5.x, 10.1);
-    ASSERT_DOUBLE_EQ(q5.y, 11.1);
-    ASSERT_DOUBLE_EQ(q5.z, 12.1);
+    math::Quaternion<int32_t> q5(math::Quatd(1.1,2.2,3.3,4.4));
+    ASSERT_EQ(q5.w, 1);
+    ASSERT_EQ(q5.x, 2);
+    ASSERT_EQ(q5.y, 3);
+    ASSERT_EQ(q5.z, 4);
 }
 
 TEST(Quaternion, assignment) {
@@ -61,11 +52,16 @@ TEST(Quaternion, assignment) {
     ASSERT_FLOAT_EQ(q1.x, q2.x);
     ASSERT_FLOAT_EQ(q1.y, q2.y);
     ASSERT_FLOAT_EQ(q1.z, q2.z);
-    q1 = DummyVec{};
-    ASSERT_FLOAT_EQ(q1.w, 13.1);
-    ASSERT_FLOAT_EQ(q1.x, 10.1);
-    ASSERT_FLOAT_EQ(q1.y, 11.1);
-    ASSERT_FLOAT_EQ(q1.z, 12.1);
+    math::Quaternion<int32_t> q3;
+    ASSERT_EQ(q3.w, 1);
+    ASSERT_EQ(q3.x, 0);
+    ASSERT_EQ(q3.y, 0);
+    ASSERT_EQ(q3.z, 0);
+    q3 = math::Quatd(1.1,2.2,3.3,4.4);
+    ASSERT_EQ(q3.w, 1);
+    ASSERT_EQ(q3.x, 2);
+    ASSERT_EQ(q3.y, 3);
+    ASSERT_EQ(q3.z, 4);
 }
 
 TEST(Quaternion, quat_operations) {

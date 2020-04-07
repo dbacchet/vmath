@@ -6,14 +6,6 @@
 #include <vector>
 #include <numeric>
 
-namespace {
-struct DummyVec {
-    double x = 10.1;
-    double y = 11.1;
-    double z = 12.1;
-    double w = 13.1;
-};
-} // namespace
 
 // /////// //
 // Vector2 //
@@ -37,9 +29,9 @@ TEST(Vector2, constructors) {
     math::Vector2d v4(vv1);
     ASSERT_DOUBLE_EQ(v4.x, 6.0);
     ASSERT_DOUBLE_EQ(v4.y, 7.0);
-    math::Vector2d v5(DummyVec{});
-    ASSERT_DOUBLE_EQ(v5.x, 10.1);
-    ASSERT_DOUBLE_EQ(v5.y, 11.1);
+    math::Vector2i v5(math::Vector2d(11.4,12.7));
+    ASSERT_EQ(v5.x, 11);
+    ASSERT_EQ(v5.y, 12);
 }
 
 TEST(Vector2, assignment) {
