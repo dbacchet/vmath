@@ -27,7 +27,6 @@
 #include <cmath>
 #include <cassert>
 #include <cstring>
-#include <cstdio>
 
 namespace math {
 
@@ -534,7 +533,6 @@ template <typename T> Quaternion<T> quat_from_matrix(const Matrix4<T> &m) {
         T d2 = m(2, 2);
 
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
-        printf("bigidx %d\n",bigIdx);
 
         if (bigIdx == 0) {
             T r = std::sqrt(1.0 + m(0, 0) - m(1, 1) - m(2, 2));
@@ -582,7 +580,6 @@ template <typename T> Quaternion<T> quat_from_matrix(const Matrix3<T> &m) {
         T d2 = m(2, 2);
 
         char bigIdx = (d0 > d1) ? ((d0 > d2) ? 0 : 2) : ((d1 > d2) ? 1 : 2);
-        printf("bigidx %d\n",bigIdx);
 
         if (bigIdx == 0) {
             T r = std::sqrt(1.0 + m(0, 0) - m(1, 1) - m(2, 2));
