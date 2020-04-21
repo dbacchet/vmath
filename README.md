@@ -76,8 +76,8 @@ snippet in your `WORKSPACE` file:
 git_repository(
     name = "vmath",
     remote = "https://github.com/dbacchet/vmath.git",
-    commit = "ac4c326af0cf9c211d3feb92b99f909473eedcc8", # replace this with the sha of the commit you want to use
-    shallow_since = "1586239353 -0700"
+    commit = "c659617f87577ff2bc0242df8b76d0b7c8ce7a55", # replace this with the sha of the commit you want to use
+    shallow_since = "1586407665 -0700"
 )
 ```
 For an example of a toy project that uses `vmath` (and is built with bazel), you can have a look at the
