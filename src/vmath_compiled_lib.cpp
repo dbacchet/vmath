@@ -37,6 +37,9 @@ template struct math::Matrix4<double>;
 template struct math::Quaternion<float>;
 template struct math::Quaternion<double>;
 
+template struct math::Transform<float>;
+template struct math::Transform<double>;
+
 
 #include "vmath.h"
 #include "vmath_impl.h"

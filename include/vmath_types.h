@@ -38,6 +38,7 @@ namespace math {
 /// 2D Vector.
 /// fields can be addressed with math names (x,y) or texture-lookup names (s,t)
 template <typename T> struct Vector2 {
+    typedef T value_type; // to access the inner type at compile time
     union {
         T x = T(0);
         T s;
@@ -98,6 +99,7 @@ template <typename T> Vector2<T> operator/(const Vector2<T> &v, T s);
 
 /// 3D vector
 template <typename T> struct Vector3 {
+    typedef T value_type; // to access the inner type at compile time
     union {
         T x = T(0);
         T s;
@@ -166,6 +168,7 @@ template <typename T> Vector3<T> operator/(const Vector3<T> &v, T s);
 
 /// 4D vector
 template <typename T> struct Vector4 {
+    typedef T value_type; // to access the inner type at compile time
     union {
         T x = T(0);
         T r;
@@ -234,6 +237,7 @@ template <typename T> Vector4<T> operator/(const Vector4<T> &v, T s);
 /// 3x3 Matrix
 /// @note data is stored in column major order
 template <typename T> struct Matrix3 {
+    typedef T value_type; // to access the inner type at compile time
     T data[9]; ///< values (stored in column-major order)
 
     // constructors
@@ -300,6 +304,7 @@ template <typename T> Vector3<T> operator*(const Matrix3<T> &m1, const Vector3<T
 /// 4x4 Matrix
 /// @note data is stored in column major order.
 template <typename T> struct Matrix4 {
+    typedef T value_type; // to access the inner type at compile time
     T data[16]; ///< data stored in column major order
 
     Matrix4();
@@ -365,7 +370,8 @@ template <typename T> Vector3<T> operator*(const Matrix4<T> &m1, const Vector3<T
 
 /// Quaternion
 template <typename T> struct Quaternion {
-    T w = T(0); ///< real part
+    typedef T value_type; // to access the inner type at compile time
+    T w = T(1); ///< real part
     T x = T(0); ///< imaginary x component
     T y = T(0); ///< imaginary y component
     T z = T(0); ///< imaginary z component
@@ -398,6 +404,29 @@ template <typename T> struct Quaternion {
     void operator+=(T rhs);
     void operator-=(T rhs);
     void operator*=(T rhs);
+    /// rotate a vector: assumes that the quaternion is normalized (i.e. representing a rotation)
+    const Vector3<T> rotate(const Vector3<T> &v) const {
+        const T vx = T(2.0) * v.x;
+        const T vy = T(2.0) * v.y;
+        const T vz = T(2.0) * v.z;
+        const T w2 = w * w - T(0.5);
+        const T dot2 = (x * vx + y * vy + z * vz);
+        return Vector3<T>((vx * w2 + (y * vz - z * vy) * w + x * dot2), //
+                          (vy * w2 + (z * vx - x * vz) * w + y * dot2), //
+                          (vz * w2 + (x * vy - y * vx) * w + z * dot2));
+    }
+    /// rotate a vector by the inverse of the quaternion.
+    /// assumes that the quaternion is normalized (i.e. representing a rotation)
+    const Vector3<T> inv_rotate(const Vector3<T> &v) const {
+        const T vx = T(2.0) * v.x;
+        const T vy = T(2.0) * v.y;
+        const T vz = T(2.0) * v.z;
+        const T w2 = w * w - T(0.5);
+        const T dot2 = (x * vx + y * vy + z * vz);
+        return Vector3<T>((vx * w2 - (y * vz - z * vy) * w + x * dot2), //
+                          (vy * w2 - (z * vx - x * vz) * w + y * dot2), //
+                          (vz * w2 - (x * vy - y * vx) * w + z * dot2));
+    }
 };
 
 // unary operators
@@ -417,8 +446,68 @@ template <typename T> Quaternion<T> operator*(const Quaternion<T> &q1, T v);
 template <typename T> Quaternion<T> operator*(T v, const Quaternion<T> &q1);
 template <typename T> Quaternion<T> operator/(const Quaternion<T> &q1, T v);
 // vector operators
+/// rotate a vector: assumes that the quaternion is normalized (i.e. representing a rotation)
 template <typename T> Vector3<T> operator*(const Quaternion<T> &q, const Vector3<T> &vec);
 template <typename T> Vector4<T> operator*(const Quaternion<T> &q, const Vector4<T> &vec);
+/// rotate a vector by the inverse of the quaternion: assumes that the quaternion is normalized (i.e. representing a rotation)
+template <typename T> Vector3<T> operator%(const Quaternion<T> &q, const Vector3<T> &vec);
+template <typename T> Vector4<T> operator%(const Quaternion<T> &q, const Vector4<T> &vec);
+
+
+// ///////// //
+// Transform //
+// ///////// //
+
+/// Transform
+/// struct that represent a rigid transform, with no scaling
+template <typename T> struct Transform {
+    Vector3<T> p;    ///< position
+    Quaternion<T> q; ///< rotation/orientation
+
+    /// create and initialize to the identity transform (no rotation and no translation)
+    Transform() {}
+
+    /// create and initialize the transform with the given translation and no rotation
+    Transform(const Vector3<T> &position)
+    : p(position) {}
+
+    /// create and initialize the transform with the given rotation and no translation
+    Transform(const Quaternion<T> &orientation)
+    : p(T(0), T(0), T(0))
+    , q(orientation) {}
+
+    Transform(const Vector3<T> &p0, const Quaternion<T> &q0)
+    : p(p0)
+    , q(q0) {}
+
+    Transform<T> &operator=(const Transform<T> &rhs) {
+        p = rhs.p;
+        q = rhs.q;
+        return *this;
+    }
+
+    /// \brief returns true if the two transforms are exactly equal
+    bool operator==(const Transform<T> &t) const { return p == t.p && q == t.q; }
+
+    Transform<T> operator*(const Transform<T> &t) const { return Transform(q.rotate(t.p) + p, q * t.q); }
+
+    //! Equals matrix multiplication
+    Transform<T> &operator*=(Transform<T> &other) {
+        *this = *this * other;
+        return *this;
+    }
+
+    // calculate the inverse of the transform
+    Transform<T> inverse() const { return Transform(q.inv_rotate(-p), ~q); }
+
+    Vector3<T> transform(const Vector3<T> &input) const { return q.rotate(input) + p; }
+
+    Vector3<T> inv_transform(const Vector3<T> &input) const { return q.inv_rotate(input - p); }
+
+    Vector3<T> rotate(const Vector3<T> &input) const { return q.rotate(input); }
+
+    Vector3<T> inv_rotate(const Vector3<T> &input) const { return q.inv_rotate(input); }
+};
 
 //--------------------------------------
 // shortcuts
@@ -447,6 +536,8 @@ typedef Matrix4<int> Matrix4i;
 typedef Quaternion<float> Quatf;
 typedef Quaternion<double> Quatd;
 
+typedef Transform<float> Transff;
+typedef Transform<double> Transfd;
 
 //----------------------------------------------------------------------------
 // implementations for the functions that will not have explicit instantiation
@@ -764,4 +855,3 @@ template <typename T> inline Vector4<T> operator*(const Quaternion<T> &q, const 
 #if not defined(VMATH_COMPILED_LIB)
 #include "vmath_types_impl.h"
 #endif
-
