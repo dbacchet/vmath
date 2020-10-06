@@ -205,5 +205,20 @@ TEST(Quaternion, vector_operators) {
     ASSERT_DOUBLE_EQ(v4.y, 3.07);
     ASSERT_DOUBLE_EQ(v4.z, 1.42);
     ASSERT_DOUBLE_EQ(v4.w, 2.34);
+
+    math::Quatd qrot(1.0,1.0,2.0,3.0);
+    qrot = qrot / std::sqrt(15.0);
+    math::Vector3d v3p = qrot * v1;
+    math::Vector3d v3r = qrot.rotate(v1);
+    ASSERT_DOUBLE_EQ(v3r.x, v3p.x);
+    ASSERT_DOUBLE_EQ(v3r.y, v3p.y);
+    ASSERT_DOUBLE_EQ(v3r.z, v3p.z);
+    math::Quatd qrot_inv = ~qrot;
+    math::Vector3d v3p_i = qrot_inv * v1;
+    math::Vector3d v3r_i = qrot.inv_rotate(v1);
+    ASSERT_DOUBLE_EQ(v3r_i.x, v3p_i.x);
+    ASSERT_DOUBLE_EQ(v3r_i.y, v3p_i.y);
+    ASSERT_DOUBLE_EQ(v3r_i.z, v3p_i.z);
+
 }
 

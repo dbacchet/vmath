@@ -20,3 +20,4 @@ coverage --copt=-fno-default-inline
 # remote cache, see here https://docs.bazel.build/versions/2.0.0/remote-caching.html
 build --experimental_guard_against_concurrent_changes
 
+test --test_output=errors
