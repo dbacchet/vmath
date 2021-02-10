@@ -1,7 +1,7 @@
 // ///////////////////////////////////////////////////////////////////////////// //
 // The MIT License (MIT)                                                         //
 //                                                                               //
-// Copyright (c) 2012-2020, Davide Bacchet (davide.bacchet@gmail.com)            //
+// Copyright (c) 2012-2021, Davide Bacchet (davide.bacchet@gmail.com)            //
 //                                                                               //
 // Permission is hereby granted, free of charge, to any person obtaining a copy  //
 // of this software and associated documentation files (the "Software"), to deal //
@@ -23,6 +23,12 @@
 // ///////////////////////////////////////////////////////////////////////////// //
 
 #pragma once
+
+#if defined(__GNUC__) && !defined(__clang__)
+// explicitly turn on vectorization in gcc (only enabled by default with -O3 otherwise)
+#pragma GCC optimize("tree-vectorize","unroll-loops") //Optimization flags
+// #pragma GCC target("avx")  //Enable AVX: this can be used to specify a minimum cpu arch
+#endif
 
 #include <cmath>
 #include <cassert>
