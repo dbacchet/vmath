@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
         profile_mat4(chain_mat4_f);
         auto dur =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
-        printf("mat4 elapsed time:   %ld ns\n", dur.count());
+        printf("mat4 elapsed time:   %lld ns\n", (long long)dur.count());
 
         // profile transf (float)
         srand(seed);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
         start = std::chrono::high_resolution_clock::now();
         profile_transform(chain_transf_f);
         dur = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
-        printf("transf elapsed time: %ld ns\n", dur.count());
+        printf("transf elapsed time: %lld ns\n", (long long)dur.count());
 
         printf("[FLOAT] benchmark complete:\n");
         const auto &tm = math::translation(chain_mat4_f.back());
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
         profile_mat4(chain_mat4_d);
         auto dur =
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
-        printf("mat4 elapsed time:   %ld ns\n", dur.count());
+        printf("mat4 elapsed time:   %lld ns\n", (long long)dur.count());
 
         // profile transf (double)
         srand(seed);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
         start = std::chrono::high_resolution_clock::now();
         profile_transform(chain_transf_d);
         dur = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
-        printf("transf elapsed time: %ld ns\n", dur.count());
+        printf("transf elapsed time: %lld ns\n", (long long)dur.count());
 
         printf("[DOUBLE] benchmark complete:\n");
         const auto &tm = math::translation(chain_mat4_d.back());
