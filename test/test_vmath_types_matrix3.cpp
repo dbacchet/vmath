@@ -264,11 +264,11 @@ TEST(Matrix3x3, other_operators) {
                                                                   -7.7, -8.8, -9.9}));
     // conversion to pointer to array
     const math::Matrix3d mconst(m);
-    const double *p = mconst;
+    const double *p = mconst.ptr();
     for (int i=0; i<9; i++) {
         ASSERT_DOUBLE_EQ(p[i], mconst.data[i]);
     }
-    double *mp = m;
+    double *mp = m.ptr();
     for (int i=0; i<9; i++) {
         mp[i] = 3*i + 0.2;
     }

@@ -127,10 +127,10 @@ TEST(Vector2, other_operators) {
     ASSERT_DOUBLE_EQ(v2.y, -v1.y);
     // conversion to pointer to array
     const math::Vector2d vconst(6.6,7.7);
-    const double *p = vconst;
+    const double *p = vconst.ptr();
     ASSERT_DOUBLE_EQ(p[0], vconst.x);
     ASSERT_DOUBLE_EQ(p[1], vconst.y);
-    double *vp = v1;
+    double *vp = v1.ptr();
     vp[0] = 3.3;
     vp[1] = 4.4;
     ASSERT_DOUBLE_EQ(v1.x, 3.3);

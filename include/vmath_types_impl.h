@@ -38,13 +38,6 @@ namespace math {
 
 // Vector2<T> implementation
 
-template <typename T>
-inline Vector2<T> &Vector2<T>::operator=(const Vector2<T> &rhs) {
-    x = rhs.x;
-    y = rhs.y;
-    return *this;
-}
-
 template <typename T> inline T &Vector2<T>::operator[](int n) {
     assert(n >= 0 && n <= 1);
     if (0 == n)
@@ -117,14 +110,6 @@ template <typename T> inline Vector2<T> Vector2<T>::operator-() const {
 
 
 // Vector3<T> implementation //
-
-template <typename T> 
-inline Vector3<T> &Vector3<T>::operator=(const Vector3<T> &rhs) {
-    x = rhs.x;
-    y = rhs.y;
-    z = rhs.z;
-    return *this;
-}
 
 template <typename T> inline T &Vector3<T>::operator[](int n) {
     assert(n >= 0 && n <= 2);
@@ -211,15 +196,6 @@ template <typename T> inline Vector3<T> Vector3<T>::operator-() const {
 }
 
 // Vector4<T> implementation
-
-template <typename T>
-inline Vector4<T> &Vector4<T>::operator=(const Vector4<T> &rhs) {
-    x = rhs.x;
-    y = rhs.y;
-    z = rhs.z;
-    w = rhs.w;
-    return *this;
-}
 
 template <typename T> inline T &Vector4<T>::operator[](int n) {
     assert(n >= 0 && n <= 3);
@@ -322,10 +298,6 @@ inline Matrix3<T>::Matrix3() ///< default to null matrix
         data[i] = T(0);
 }
 
-template <typename T> inline Matrix3<T>::Matrix3(const Matrix3<T> &src) {
-    std::memcpy(data, src.data, sizeof(T) * 9);
-}
-
 template <typename T> inline Matrix3<T>::Matrix3(const T *dt) {
     for (int k=0; k<9; k++) {
         data[k] = dt[(k%3)*3 + k/3];
@@ -375,11 +347,6 @@ template <typename T> inline const T &Matrix3<T>::at(int x, int y) const {
     return data[x * 3 + y];
 }
 
-template <typename T> inline Matrix3<T> &Matrix3<T>::operator=(const Matrix3<T> &rhs) {
-    std::memcpy(data, rhs.data, sizeof(T) * 9);
-    return *this;
-}
-
 template <typename T> inline void Matrix3<T>::operator+=(T rhs) {
     for (int i = 0; i < 9; i++)
         data[i] += rhs;
@@ -425,10 +392,6 @@ template <typename T> inline Matrix4<T>::Matrix4(std::initializer_list<T> init) 
 }
 
 
-template <typename T> inline Matrix4<T>::Matrix4(const Matrix4<T> &src) {
-    std::memcpy(data, src.data, 16 * sizeof(T));
-}
-
 template <typename T> inline bool Matrix4<T>::operator==(const Matrix4<T> &rhs) const {
     for (int i = 0; i < 16; i++) {
         if (std::abs(data[i] - rhs.data[i]) >= VMATH_EPSILON)
@@ -465,11 +428,6 @@ template <typename T> inline const T &Matrix4<T>::operator()(int i, int j) const
     return data[j * 4 + i];
 }
 
-template <typename T> inline Matrix4<T> &Matrix4<T>::operator=(const Matrix4<T> &rhs) {
-    std::memcpy(data, rhs.data, 16 * sizeof(T));
-    return *this;
-}
-
 template <typename T> inline void Matrix4<T>::operator+=(T rhs) {
     for (int i = 0; i < 16; i++)
         data[i] += rhs;
@@ -492,15 +450,6 @@ template <typename T> inline void Matrix4<T>::operator/=(T rhs) {
 
 
 // Quaternion<T> implementation
-
-template <typename T> 
-inline Quaternion<T> &Quaternion<T>::operator=(const Quaternion<T> &rhs) {
-    w = rhs.w;
-    x = rhs.x;
-    y = rhs.y;
-    z = rhs.z;
-    return *this;
-}
 
 template <typename T> inline void Quaternion<T>::operator+=(const Quaternion<T> &rhs) {
     w += rhs.w;

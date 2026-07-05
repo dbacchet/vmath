@@ -29,7 +29,7 @@ using namespace math;
 
 Matrix4f transform = create_transformation(Vector3f(10,1,0),                               // translation
                                            quat_from_axis_angle(Vector3f(0,0,1), M_PI/3)); // orientation
-glUniformMatrix4fv(uniform_id, 1, GL_FALSE, transform);
+glUniformMatrix4fv(uniform_id, 1, GL_FALSE, transform.ptr());
 ```
  
 ## Installation and Usage
