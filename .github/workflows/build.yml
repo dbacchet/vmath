@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     # bazelisk ships preinstalled on GitHub runners as `bazel` and honors the
     # version pinned in .bazelversion, so no manual bazel install is needed.
     - name: Build
