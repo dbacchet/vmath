@@ -9,40 +9,31 @@ on:
 
 jobs:
 
-  linux:
+  coverage:
     timeout-minutes: 50
 
-    strategy:
-      matrix:
-        os: [ubuntu-18.04]
-        # compiler: [g++, clang++]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Install system dependencies
       run: |
            sudo apt update
-           sudo apt install -y wget lcov default-jdk
-    - name: Install build dependencies
-      run: |
-           wget https://github.com/bazelbuild/bazel/releases/download/2.2.0/bazel-2.2.0-installer-linux-x86_64.sh
-           chmod +x bazel-2.2.0-installer-linux-x86_64.sh
-           sudo ./bazel-2.2.0-installer-linux-x86_64.sh
-           rm bazel-2.2.0-installer-linux-x86_64.sh 
+           sudo apt install -y lcov
+    # bazelisk ships preinstalled on GitHub runners as `bazel` and honors the
+    # version pinned in .bazelversion, so no manual bazel install is needed.
     - name: Coverage
       run: |
            bazel coverage --combined_report=lcov //...
            genhtml bazel-out/_coverage/_coverage_report.dat -o report
            tar -czf report.tgz report
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: report.tgz
-    
+
     - name: Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         path-to-lcov: bazel-out/_coverage/_coverage_report.dat
