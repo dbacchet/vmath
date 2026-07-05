@@ -55,17 +55,15 @@ template <typename T> struct Vector2 {
     };
 
     // constructors
-    Vector2()
-    : x(0), y(0) {}
+    Vector2() = default;
     constexpr Vector2(T _x, T _y)
     : x(_x), y(_y) {}
-    constexpr Vector2(const Vector2<T> &src)
-    : x(src.x), y(src.y) {}
+    Vector2(const Vector2<T> &src) = default;
     template <typename fromT>
     constexpr Vector2(const Vector2<fromT>& src)
     : x(static_cast<T>(src.x)), y(static_cast<T>(src.y))  {}
     // assignment operator
-    Vector2<T> &operator=(const Vector2<T> &rhs);
+    Vector2<T> &operator=(const Vector2<T> &rhs) = default;
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -85,9 +83,9 @@ template <typename T> struct Vector2 {
     bool operator!=(const Vector2<T> &rhs) const;
     // unary operators
     Vector2<T> operator-() const;
-    // conversion to pointer operator (for passing the instance as a T*)
-    operator T *() { return (T *)this; }
-    operator const T *() const { return (const T *)this; }
+    // pointer to the underlying data (for passing the instance as a T*)
+    T *ptr() { return &x; }
+    const T *ptr() const { return &x; }
 };
 
 template <typename T> Vector2<T> operator+(const Vector2<T> &v, T s);
@@ -123,17 +121,15 @@ template <typename T> struct Vector3 {
     };
 
     // constructors
-    Vector3()
-    : x(0), y(0), z(0) {}
+    Vector3() = default;
     constexpr Vector3(T nx, T ny, T nz)
     : x(nx), y(ny), z(nz) {}
-    constexpr Vector3(const Vector3<T> &src)
-    : x(src.x), y(src.y), z(src.z) {}
+    Vector3(const Vector3<T> &src) = default;
     template <typename fromT>
     constexpr Vector3(const Vector3<fromT>& src)
     : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z))  {}
     // assignment operators
-    Vector3<T> &operator=(const Vector3<T> &rhs);
+    Vector3<T> &operator=(const Vector3<T> &rhs) = default;
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -154,9 +150,9 @@ template <typename T> struct Vector3 {
     bool operator!=(const Vector3<T> &rhs) const;
     // unary operators
     Vector3<T> operator-() const;
-    // conversion to pointer operator (for passing the instance as a T*)
-    operator T *() { return (T *)this; }
-    operator const T *() const { return (const T *)this; }
+    // pointer to the underlying data (for passing the instance as a T*)
+    T *ptr() { return &x; }
+    const T *ptr() const { return &x; }
 };
 
 template <typename T> Vector3<T> operator+(const Vector3<T> &v, T s);
@@ -192,17 +188,15 @@ template <typename T> struct Vector4 {
         T a;
     };
 
-    Vector4()
-    : x(0), y(0), z(0), w(0) {}
+    Vector4() = default;
     constexpr Vector4(T nx, T ny, T nz, T nw)
     : x(nx), y(ny), z(nz), w(nw) {}
-    constexpr Vector4(const Vector4<T> &src)
-    : x(src.x), y(src.y), z(src.z), w(src.w) {}
+    Vector4(const Vector4<T> &src) = default;
     template <typename fromT>
     constexpr Vector4(const Vector4<fromT>& src)
     : x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) , w(static_cast<T>(src.w)) {}
     // assignment operators
-    Vector4<T> &operator=(const Vector4<T> &rhs);
+    Vector4<T> &operator=(const Vector4<T> &rhs) = default;
     // access operators
     T &operator[](int n);
     const T &operator[](int n) const;
@@ -222,9 +216,9 @@ template <typename T> struct Vector4 {
     void operator/=(T rhs);
     // unary operators
     Vector4<T> operator-() const;
-    // conversion to pointer operator (for passing the instance as a T*)
-    operator T *() { return (T *)this; }
-    operator const T *() const { return (const T *)this; }
+    // pointer to the underlying data (for passing the instance as a T*)
+    T *ptr() { return &x; }
+    const T *ptr() const { return &x; }
 };
 
 template <typename T> Vector4<T> operator+(const Vector4<T> &v, T s);
@@ -248,7 +242,7 @@ template <typename T> struct Matrix3 {
 
     // constructors
     Matrix3();
-    Matrix3(const Matrix3<T> &src);
+    Matrix3(const Matrix3<T> &src) = default;
     template <typename fromT>
     Matrix3(const Matrix3<fromT> &src) {
         for (int i = 0; i < 9; i++)
@@ -269,7 +263,7 @@ template <typename T> struct Matrix3 {
     T &at(int x, int y);
     const T &at(int x, int y) const;
     // assignment operators
-    Matrix3<T> &operator=(const Matrix3<T> &rhs);
+    Matrix3<T> &operator=(const Matrix3<T> &rhs) = default;
     template <typename fromT> Matrix3<T> &operator=(const Matrix3<fromT> &rhs) {
         for (int i = 0; i < 9; i++)
             data[i] = static_cast<T>(rhs.data[i]);
@@ -280,9 +274,9 @@ template <typename T> struct Matrix3 {
     void operator-=(T rhs);
     void operator*=(T rhs);
     void operator/=(T rhs);
-    // conversion to pointer operator (for passing the instance as a T*)
-    operator T *() { return (T *)data; }
-    operator const T *() const { return (const T *)data; }
+    // pointer to the underlying data (for passing the instance as a T*)
+    T *ptr() { return data; }
+    const T *ptr() const { return data; }
 };
 
 // unary operators
@@ -314,7 +308,7 @@ template <typename T> struct Matrix4 {
     T data[16]; ///< data stored in column major order
 
     Matrix4();
-    Matrix4(const Matrix4<T> &src);
+    Matrix4(const Matrix4<T> &src) = default;
     template <typename fromT>
     Matrix4(const Matrix4<fromT> &src) {
         for (int i = 0; i < 16; i++)
@@ -335,7 +329,7 @@ template <typename T> struct Matrix4 {
     T &at(int x, int y);
     const T &at(int x, int y) const;
     // assignment
-    Matrix4<T> &operator=(const Matrix4<T> &rhs);
+    Matrix4<T> &operator=(const Matrix4<T> &rhs) = default;
     template <typename fromT> Matrix4<T> &operator=(const Matrix4<fromT> &rhs) {
         for (int i = 0; i < 16; i++)
             data[i] = static_cast<T>(rhs.data[i]);
@@ -346,9 +340,9 @@ template <typename T> struct Matrix4 {
     void operator-=(T rhs);
     void operator*=(T rhs);
     void operator/=(T rhs);
-    // conversion to pointer operator (for passing the instance as a T*)
-    operator T *() { return (T *)data; }
-    operator const T *() const { return (const T *)data; }
+    // pointer to the underlying data (for passing the instance as a T*)
+    T *ptr() { return data; }
+    const T *ptr() const { return data; }
 };
 
 // unary operators
@@ -386,13 +380,12 @@ template <typename T> struct Quaternion {
     : w(1), x(0), y(0), z(0) {}
     constexpr Quaternion(T w_, T x_, T y_, T z_)
     : w(w_), x(x_), y(y_), z(z_) {}
-    constexpr Quaternion(const Quaternion<T> &q)
-    : w(q.w), x(q.x), y(q.y), z(q.z) {}
+    Quaternion(const Quaternion<T> &q) = default;
     template <typename fromT>
     constexpr Quaternion(const Quaternion<fromT>& src)
     : w(static_cast<T>(src.w)), x(static_cast<T>(src.x)), y(static_cast<T>(src.y)), z(static_cast<T>(src.z)) {}
     // assignment
-    Quaternion<T> &operator=(const Quaternion<T> &rhs);
+    Quaternion<T> &operator=(const Quaternion<T> &rhs) = default;
     template <typename fromT> Quaternion<T> &operator=(const fromT &rhs) {
         w = static_cast<T>(rhs.w);
         x = static_cast<T>(rhs.x);
@@ -486,11 +479,7 @@ template <typename T> struct Transform {
     : p(p0)
     , q(q0) {}
 
-    Transform<T> &operator=(const Transform<T> &rhs) {
-        p = rhs.p;
-        q = rhs.q;
-        return *this;
-    }
+    Transform<T> &operator=(const Transform<T> &rhs) = default;
 
     /// \brief returns true if the two transforms are exactly equal
     bool operator==(const Transform<T> &t) const { return p == t.p && q == t.q; }

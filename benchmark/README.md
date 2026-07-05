@@ -107,13 +107,13 @@ the full set):
 | mat3_inverse | 1.80 | 1.73 |
 | mat4_mul_batch | 0.93 | 1.23 |
 | mat4_mul_chain | 4.81 | 4.68 |
-| mat4_inverse | 28.18 | 25.12 |
+| mat4_inverse | 29.66 | 26.59 |
 | mat4_mul_vec4 | 1.84 | 1.70 |
 | quat_mul_chain | 4.60 | 4.81 |
 | quat_rotate_vec3 | 0.86 | 1.51 |
-| quat_slerp | 13.84 | 21.69 |
-| mat4_to_quat | 4.57 | 2.32 |
-| quat_to_euler_321 | 22.46 | 46.68 |
+| quat_slerp | 14.68 | 21.79 |
+| mat4_to_quat | 5.40 | 2.38 |
+| quat_to_euler_321 | 19.44 | 45.25 |
 | transform_compose_chain | 4.85 | 5.01 |
 | scene_graph_update | 7.32 | 7.45 |
 

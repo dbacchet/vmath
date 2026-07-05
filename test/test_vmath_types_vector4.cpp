@@ -183,12 +183,12 @@ TEST(Vector4, other_operators) {
     ASSERT_DOUBLE_EQ(v2.w, -v1.w);
     // conversion to pointer to array
     const math::Vector4d vconst(6.6,7.7,8.8,9.9);
-    const double *p = vconst;
+    const double *p = vconst.ptr();
     ASSERT_DOUBLE_EQ(p[0], vconst.x);
     ASSERT_DOUBLE_EQ(p[1], vconst.y);
     ASSERT_DOUBLE_EQ(p[2], vconst.z);
     ASSERT_DOUBLE_EQ(p[3], vconst.w);
-    double *vp = v1;
+    double *vp = v1.ptr();
     vp[0] = 3.3;
     vp[1] = 4.4;
     vp[2] = 5.5;
