@@ -6,3 +6,9 @@ cc_binary(
     deps = ['//:vmath',
            ]
 )
+
+cc_binary(
+    name = 'vmath_benchmark',
+    srcs = ['vmath_benchmark.cpp', 'benchmark_util.h'],
+    deps = ['//:vmath'],
+)
