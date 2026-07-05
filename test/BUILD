@@ -1,3 +1,5 @@
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
 filegroup(
     name = 'unit_test_files',
     srcs = ['test_vmath_types_vector2.cpp',

@@ -1,0 +1,13 @@
+"""vmath - minimalistic math library for 2/3/4D vectors, matrices and quaternions."""
+
+module(
+    name = "vmath",
+    version = "1.0.0",
+    compatibility_level = 1,
+)
+
+# Native cc_* rules were removed from Bazel core; depend on rules_cc explicitly.
+bazel_dep(name = "rules_cc", version = "0.0.17")
+
+# Test framework, resolved from the Bazel Central Registry.
+bazel_dep(name = "googletest", version = "1.15.2", repo_name = "googletest")

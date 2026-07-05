@@ -5,17 +5,22 @@ build --copt=-Werror
 # Use color diagnostics
 build --copt=-fdiagnostics-color
 
-# Work around a broken CommandLineTools libc++ include path on macOS by
-# pointing at the C++ headers that ship inside the active SDK.
-build --cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
-build --host_cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
+# Automatically apply the build:linux / build:macos / build:windows configs
+# below based on the host OS.
+build --enable_platform_specific_config
+
+# Work around a broken CommandLineTools libc++ include path on some macOS setups
+# by pointing at the C++ headers that ship inside the active SDK. Scoped to
+# macOS so it never leaks into Linux/Windows builds.
+build:macos --cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
+build:macos --host_cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
 
 # Always assert
 build --copt=-UNDEBUG
 
-# Add C++11 compiler flags.
-build --cxxopt=-std=c++11
-build --host_cxxopt=-std=c++11
+# Add C++14 compiler flags (minimum required by modern googletest).
+build --cxxopt=-std=c++14
+build --host_cxxopt=-std=c++14
 
 # code coverage
 coverage --copt=-fno-inline

@@ -47,9 +47,10 @@ In case you are using the precompiled version and you need other types, they can
 
 ## Building the repository
 
-`vmath` uses [bazel](https://bazel.build/) as build system. 
-To build `vmath` and run the unit tests, you need a recent version of bazel (the project has been developed with bazel 
-2.2.0, but any version >1.2.0 should work fine) and a compiler that is not from the previous millennium.
+`vmath` uses [bazel](https://bazel.build/) as build system, with dependencies managed through
+[Bzlmod](https://bazel.build/external/module) (`MODULE.bazel`). The exact bazel version is pinned in
+`.bazelversion`, so if you use [bazelisk](https://github.com/bazelbuild/bazelisk) (the default `bazel`
+launcher on most systems) the right version is fetched automatically. A compiler with C++14 support is required.
 
 If you have docker, the repository contains a `Dockerfile` that can be used to build an ubuntu 18.04 image with all the 
 required tools. To build and run the container, you can just run the command:
@@ -70,14 +71,14 @@ It's also possible to generate a code coverage report using the following comman
 root@3e4335a3e71f:/code# bazel coverage --combined_report=lcov //... --test_output=errors && genhtml -o report bazel-out/_coverage/_coverage_report.dat
 ```
 
-If you want to use `vmath` in a project that is built with [bazel](https://bazel.build/) you can just add the following
-snippet in your `WORKSPACE` file:
+If you want to use `vmath` in a project that is built with [bazel](https://bazel.build/) you can add it as a
+dependency in your `MODULE.bazel` file using a `git_override` (replace the commit with the one you want to use):
 ```
-git_repository(
-    name = "vmath",
+bazel_dep(name = "vmath", version = "1.0.0")
+git_override(
+    module_name = "vmath",
     remote = "https://github.com/dbacchet/vmath.git",
-    commit = "c659617f87577ff2bc0242df8b76d0b7c8ce7a55", # replace this with the sha of the commit you want to use
-    shallow_since = "1586407665 -0700"
+    commit = "c659617f87577ff2bc0242df8b76d0b7c8ce7a55",
 )
 ```
 For an example of a toy project that uses `vmath` (and is built with bazel), you can have a look at the
