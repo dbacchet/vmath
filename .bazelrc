@@ -6,14 +6,8 @@ build --copt=-Werror
 build --copt=-fdiagnostics-color
 
 # Automatically apply the build:linux / build:macos / build:windows configs
-# below based on the host OS.
+# based on the host OS.
 build --enable_platform_specific_config
-
-# Work around a broken CommandLineTools libc++ include path on some macOS setups
-# by pointing at the C++ headers that ship inside the active SDK. Scoped to
-# macOS so it never leaks into Linux/Windows builds.
-build:macos --cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
-build:macos --host_cxxopt=-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
 
 # Always assert
 build --copt=-UNDEBUG
@@ -31,3 +25,7 @@ coverage --copt=-fno-default-inline
 build --guard_against_concurrent_changes
 
 test --test_output=errors
+
+# Machine-specific overrides (e.g. a local libc++ workaround) live in an
+# untracked user.bazelrc; ignored if the file does not exist.
+try-import %workspace%/user.bazelrc
