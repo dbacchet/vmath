@@ -25,9 +25,16 @@ repetitions). The suite covers:
 hardest case for the CPU); "batch" benchmarks process independent items
 (throughput-bound).
 
-The harness (`benchmark_util.h`) uses a warmup pass, takes the **minimum** time
-as the headline metric (most stable under system noise), and routes every result
-through `do_not_optimize()` so the compiler cannot eliminate the work.
+The harness (`benchmark_util.h`) uses a per-benchmark warmup pass, takes the
+**minimum** time as the headline metric (most stable under system noise), and
+routes every result through `do_not_optimize()` so the compiler cannot eliminate
+the work. At startup the tool also spins for ~200 ms so the CPU reaches a steady
+(boosted) frequency before any measurement — without this the first (cheapest)
+benchmarks are biased by the frequency ramp-up.
+
+With the defaults (`--reps 100` + warmup), run-to-run variability on the
+reference machine is small: all 50 benchmarks stay within ~7% across repeated
+runs (most within 3%), so the default 10% regression threshold is comfortable.
 
 ## Running
 
@@ -42,7 +49,7 @@ bazel run -c opt //benchmark:vmath_benchmark
 bazel run -c opt //benchmark:vmath_benchmark -- --filter mat4
 
 # more repetitions (better min estimate on a noisy machine)
-bazel run -c opt //benchmark:vmath_benchmark -- --reps 200
+bazel run -c opt //benchmark:vmath_benchmark -- --reps 400
 ```
 
 ### Record a baseline
@@ -70,7 +77,7 @@ regressions for `--check`.
 
 | flag | meaning |
 |------|---------|
-| `--reps N` | repetitions per benchmark (default 50) |
+| `--reps N` | repetitions per benchmark (default 100) |
 | `--filter SUBSTR` | only run benchmarks whose name contains `SUBSTR` |
 | `--save PATH` | write current results as a baseline file |
 | `--baseline PATH` | compare current results against a baseline file |
@@ -89,26 +96,26 @@ Reference baseline recorded with:
 - **CPU:** Apple M2
 - **OS:** macOS 26.5.1
 - **Compiler:** Apple clang 21.0.0, `-c opt` (`-O2`), C++14
-- **bazel:** 8.4.2, `--reps 50`
+- **bazel:** 8.4.2, `--reps 100`
 
 Headline metric is `ns/op(best)`. Selected highlights (see `baseline.txt` for
 the full set):
 
 | benchmark | float ns/op | double ns/op |
 |-----------|------------:|-------------:|
-| vec3_normalize | 1.52 | 1.21 |
-| mat3_inverse | 2.47 | 1.97 |
-| mat4_mul_batch | 1.24 | 1.41 |
-| mat4_mul_chain | 6.23 | 5.34 |
-| mat4_inverse | 38.45 | 28.49 |
-| mat4_mul_vec4 | 2.52 | 1.93 |
-| quat_mul_chain | 5.99 | 5.25 |
-| quat_rotate_vec3 | 1.11 | 1.67 |
-| quat_slerp | 17.81 | 23.10 |
-| mat4_to_quat | 3.10 | 2.66 |
-| quat_to_euler_321 | 26.94 | 47.73 |
-| transform_compose_chain | 5.82 | 4.97 |
-| scene_graph_update | 8.67 | 7.45 |
+| vec3_normalize | 0.95 | 1.06 |
+| mat3_inverse | 1.80 | 1.73 |
+| mat4_mul_batch | 0.93 | 1.23 |
+| mat4_mul_chain | 4.81 | 4.68 |
+| mat4_inverse | 28.18 | 25.12 |
+| mat4_mul_vec4 | 1.84 | 1.70 |
+| quat_mul_chain | 4.60 | 4.81 |
+| quat_rotate_vec3 | 0.86 | 1.51 |
+| quat_slerp | 13.84 | 21.69 |
+| mat4_to_quat | 4.57 | 2.32 |
+| quat_to_euler_321 | 22.46 | 46.68 |
+| transform_compose_chain | 4.85 | 5.01 |
+| scene_graph_update | 7.32 | 7.45 |
 
 The clear hotspots are `mat4_inverse`, `quat_to_euler_321` and `quat_slerp` —
 good candidates if optimization work is ever needed.

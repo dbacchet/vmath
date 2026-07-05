@@ -385,7 +385,7 @@ int compare_to_baseline(const std::vector<bench::Result> &results, const std::ma
 
 void print_usage(const char *prog) {
     printf("usage: %s [options]\n", prog);
-    printf("  --reps N            repetitions per benchmark (default 50)\n");
+    printf("  --reps N            repetitions per benchmark (default 100)\n");
     printf("  --filter SUBSTR     only run benchmarks whose name contains SUBSTR\n");
     printf("  --save PATH         write current results as a baseline file\n");
     printf("  --baseline PATH     compare current results against a baseline file\n");
@@ -398,7 +398,7 @@ void print_usage(const char *prog) {
 } // namespace
 
 int main(int argc, char **argv) {
-    int reps = 50;
+    int reps = 100;
     double threshold = 10.0;
     bool check = false;
     std::string save_path, baseline_path, filter;
@@ -439,6 +439,21 @@ int main(int argc, char **argv) {
     bench::Suite suite;
     register_benchmarks<float>(suite, "f");
     register_benchmarks<double>(suite, "d");
+
+    // Process-level warmup: spin doing real work for ~200 ms so the CPU reaches
+    // a steady (boosted) frequency before any measurement. Without this the
+    // first (cheapest) benchmarks are biased by the frequency ramp-up.
+    {
+        volatile double sink = 0.0;
+        double acc = 1.0;
+        auto t0 = bench::clock_type::now();
+        while (std::chrono::duration<double, std::milli>(bench::clock_type::now() - t0).count() < 200.0) {
+            for (int k = 0; k < 10000; ++k)
+                acc = acc * 1.0000001 + 1e-9;
+            sink += acc;
+        }
+        bench::do_not_optimize(sink);
+    }
 
     printf("running vmath benchmarks (reps=%d)...\n", reps);
     auto results = suite.run(reps, filter);
