@@ -9,7 +9,7 @@ quite stable, but if you find a bug or want to contribute bugfixes and improveme
 
 ## Design
 
-The Vector2/3/4, Matrix2/3/4 and Quaternion classes are minimalistic by design. They only contain setters, accessors and operators;
+The Vector2/3/4, Matrix3/4 and Quaternion classes are minimalistic by design. They only contain setters, accessors and operators;
 everything else is implemented as external functions and factories in order to provide more consistency between the functionality that 
 is packaged in the library and custom extensions.
 
@@ -17,11 +17,12 @@ The data in the `Vector` classes is accessible using either `x`/`y`/`z` or `r`/`
 
 The data in the `Matrix` classes is stored internally in column-major order, compatible with the default of many graphics API.
 
-I't possible to pass directly a `Vector`/`Matrix` in functions that accept a pointer (like OpenGL); for example:
+The `ptr()` accessor returns a pointer to the underlying contiguous data, which makes it easy to pass a
+`Vector`/`Matrix` to APIs (like OpenGL) that expect a raw pointer.
 
 The classes use templates for the internal data type, but there are convenience typedefs for the most commonly used,
 like `Vector3f` (3D vector using `float`s), `Vector3d` (3D vector using `double`s), etc. See the file `vmath_types.h`
-for the list of the typedefs that are currently defined.
+for the list of the typedefs that are currently defined. For example:
 
 ```c++
 using namespace math;
@@ -52,8 +53,8 @@ In case you are using the precompiled version and you need other types, they can
 `.bazelversion`, so if you use [bazelisk](https://github.com/bazelbuild/bazelisk) (the default `bazel`
 launcher on most systems) the right version is fetched automatically. A compiler with C++14 support is required.
 
-If you have docker, the repository contains a `Dockerfile` that can be used to build an ubuntu 18.04 image with all the 
-required tools. To build and run the container, you can just run the command:
+If you have docker, the repository contains a `Dockerfile` that can be used to build an ubuntu 24.04 image with all the 
+required tools (it installs [bazelisk](https://github.com/bazelbuild/bazelisk), which fetches the bazel version pinned in `.bazelversion`). To build and run the container, you can just run the command:
 ```
 ./docker/run.sh
 ```

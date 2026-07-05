@@ -1,18 +1,23 @@
-FROM ubuntu:18.04
-MAINTAINER Davide
+FROM ubuntu:24.04
+LABEL maintainer="Davide"
 
-RUN apt-get update
-RUN apt-get install -y build-essential
-RUN apt-get install -y gdb
-RUN apt-get install -y lcov
-RUN apt-get install -y git
-RUN apt-get install -y vim
-RUN apt-get install -y wget
-RUN apt-get install -y htop
-RUN apt-get install -y unzip
-# openjdk is needed for bazel coverage
-RUN apt-get install -y default-jdk
-# bazel
-RUN wget https://github.com/bazelbuild/bazel/releases/download/2.2.0/bazel-2.2.0-installer-linux-x86_64.sh \
-    && chmod +x bazel-2.2.0-installer-linux-x86_64.sh \
-    && ./bazel-2.2.0-installer-linux-x86_64.sh
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+        build-essential \
+        gdb \
+        lcov \
+        git \
+        vim \
+        wget \
+        htop \
+        unzip \
+        # openjdk is needed for bazel coverage
+        default-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install bazelisk as `bazel`: it reads the version pinned in .bazelversion
+# and fetches the matching bazel release automatically.
+RUN wget -O /usr/local/bin/bazel \
+        https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 \
+    && chmod +x /usr/local/bin/bazel
